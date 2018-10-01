@@ -1,0 +1,30 @@
+Info2: <<
+Package: zmq-py%type_pkg[python]
+Version: 17.1.2
+Revision: 1
+Type: python (2.7 3.4 3.5 3.6 3.7)
+Description: ZeroMQ networking (0MQ)
+License: LGPL
+HomePage: http://pypi.python.org/pypi/pyzmq/
+Maintainer: Kurt Schwehr <goatbar@users.sourceforge.net>
+
+Depends: python%type_pkg[python], libzmq6-shlibs
+BuildDepends: python%type_pkg[python], libzmq6
+
+Source: https://files.pythonhosted.org/packages/source/p/pyzmq/pyzmq-%v.tar.gz
+Source-MD5: 6f5d77cb5ec1617ce9b6e5ad7c6174fb
+
+CompileScript: <<
+  python%type_raw[python] setup.py configure --zmq=%p
+<<
+InstallScript: python%type_raw[python] setup.py install --root=%d
+DocFiles: README.md COPYING.LESSER COPYING.BSD
+# FIX: build the docs with sphinx
+
+DescDetail: <<
+This package contains Python bindings for 0MQ. 0MQ is a lightweight
+and fast messaging implementation.
+<<
+
+# Info2
+<<

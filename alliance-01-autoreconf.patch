@@ -1,0 +1,541 @@
+Description: Autotools generation
+ This patch reorganizes the autotools generated stuff (goal is to fix upstream
+ and not use autotools at build time at all!)
+Author: Roland Stigge <stigge@antcom.de>
+
+Index: alliance-5.0-20120503/autostuff
+===================================================================
+--- alliance-5.0-20120503.orig/autostuff	2012-04-17 10:04:27.000000000 +0200
++++ alliance-5.0-20120503/autostuff	2012-05-12 17:31:48.000000000 +0200
+@@ -319,6 +319,9 @@
+   done
+ done
+ 
++# Debian: workaround for missing configure.in's in subdirs:
++cat configure-extracts >> configure.in
++
+ echo ""                                      >> configure.in
+ echo "TOOLSDIRS=\"$ordered_dirs\""           >> configure.in
+ echo "AC_SUBST(TOOLSDIRS)"                   >> configure.in
+@@ -336,7 +339,7 @@
+ 
+ aclocal -I .
+ libtoolize --force --copy --automake
+-automake --foreign --add-missing --copy
++automake --foreign --add-missing --copy -f
+ autoconf
+ 
+ exit 0
+Index: alliance-5.0-20120503/configure-extracts
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ alliance-5.0-20120503/configure-extracts	2012-05-12 17:31:48.000000000 +0200
+@@ -0,0 +1,508 @@
++dnl Infos extracted from mbk/configure.in
++MBK_CUR=4
++AC_SUBST(MBK_CUR)
++MBK_REV=2
++AC_SUBST(MBK_REV)
++MBK_REL=0
++AC_SUBST(MBK_REL)
++MBK_DLL_VERSION=${MBK_CUR}:${MBK_REV}:${MBK_REL}
++AC_SUBST(MBK_DLL_VERSION)
++MBK_VERSION=$MBK_CUR.$MBK_REV
++AC_SUBST(MBK_VERSION)
++
++dnl Infos extracted from mbkal/configure.in
++MAL_DLL_VERSION=6:0:0
++AC_SUBST(MAL_DLL_VERSION)
++
++dnl Infos extracted from mbkap/configure.in
++MAP_DLL_VERSION=6:0:0
++AC_SUBST(MAP_DLL_VERSION)
++
++dnl Infos extracted from mbkedif/configure.in
++MEL_DLL_VERSION=4:9:0
++AC_SUBST(MEL_DLL_VERSION)
++
++dnl Infos extracted from mbkhilo/configure.in
++MHL_DLL_VERSION=2:1:0
++AC_SUBST(MHL_DLL_VERSION)
++
++dnl Infos extracted from mbkmg/configure.in
++MMG_DLL_VERSION=1:0:0
++AC_SUBST(MMG_DLL_VERSION)
++
++dnl Infos extracted from mbkspice/configure.in
++MSL_DLL_VERSION=7:0:0
++AC_SUBST(MSL_DLL_VERSION)
++
++dnl Infos extracted from mbkvhdl/configure.in
++MVL_DLL_VERSION=4:1:0
++AC_SUBST(MVL_DLL_VERSION)
++
++dnl Infos extracted from mbkvrlog/configure.in
++MGL_DLL_VERSION=0:8:0
++AC_SUBST(MGL_DLL_VERSION)
++
++dnl Infos extracted from mbkvti/configure.in
++MCP_DLL_VERSION=4:9:0
++AC_SUBST(MCP_DLL_VERSION)
++MCL_DLL_VERSION=4:9:0
++AC_SUBST(MCL_DLL_VERSION)
++
++dnl Infos extracted from mbkvhdlg/configure.in
++MVG_DLL_VERSION=4:1:0
++AC_SUBST(MVG_DLL_VERSION)
++
++dnl Infos extracted from aut/configure.in
++AUT_DLL_VERSION=1:3:0
++AC_SUBST(AUT_DLL_VERSION)
++
++dnl Infos extracted from rds/configure.in
++RDS_DLL_VERSION=2:1:0
++AC_SUBST(RDS_DLL_VERSION)
++RUT_DLL_VERSION=2:1:0
++AC_SUBST(RUT_DLL_VERSION)
++RFM_DLL_VERSION=2:1:0
++AC_SUBST(RFM_DLL_VERSION)
++RPR_DLL_VERSION=2:1:0
++AC_SUBST(RPR_DLL_VERSION)
++RWI_DLL_VERSION=2:1:0
++AC_SUBST(RWI_DLL_VERSION)
++RTL_DLL_VERSION=2:1:0
++AC_SUBST(RTL_DLL_VERSION)
++
++dnl Infos extracted from rdscif/configure.in
++RCF_DLL_VERSION=2:1:0
++AC_SUBST(RCF_DLL_VERSION)
++
++dnl Infos extracted from rdsgds/configure.in
++RGS_DLL_VERSION=2:1:0
++AC_SUBST(RGS_DLL_VERSION)
++
++dnl Infos extracted from elp/configure.in
++ELP_DLL_VERSION=1:5:0
++AC_SUBST(ELP_DLL_VERSION)
++
++dnl Infos extracted from abl/configure.in
++ABL_DLL_VERSION=1:3:0
++AC_SUBST(ABL_DLL_VERSION)
++
++dnl Infos extracted from bdd/configure.in
++BDD_DLL_VERSION=1:5:0
++AC_SUBST(BDD_DLL_VERSION)
++
++dnl Infos extracted from log/configure.in
++LOG_DLL_VERSION=2:1:0
++AC_SUBST(LOG_DLL_VERSION)
++
++dnl Infos extracted from btr/configure.in
++BTR_DLL_VERSION=1:3:0
++AC_SUBST(BTR_DLL_VERSION)
++
++dnl Infos extracted from vex/configure.in
++VEX_DLL_VERSION=1:3:0
++AC_SUBST(VEX_DLL_VERSION)
++
++dnl Infos extracted from ctl/configure.in
++CTL_DLL_VERSION=1:1:0
++AC_SUBST(CTL_DLL_VERSION)
++
++dnl Infos extracted from ctp/configure.in
++CTP_DLL_VERSION=1:1:0
++AC_SUBST(CTP_DLL_VERSION)
++
++dnl Infos extracted from abe/configure.in
++ABE_DLL_VERSION=2:1:0
++AC_SUBST(ABE_DLL_VERSION)
++
++dnl Infos extracted from abt/configure.in
++ABT_DLL_VERSION=2:1:0
++AC_SUBST(ABT_DLL_VERSION)
++
++dnl Infos extracted from abv/configure.in
++ABV_DLL_VERSION=2:1:0
++AC_SUBST(ABV_DLL_VERSION)
++
++dnl Infos extracted from fsm/configure.in
++FSM_DLL_VERSION=1:4:0
++AC_SUBST(FSM_DLL_VERSION)
++
++dnl Infos extracted from fks/configure.in
++FKS_DLL_VERSION=1:4:0
++AC_SUBST(FKS_DLL_VERSION)
++
++dnl Infos extracted from fvh/configure.in
++FVH_DLL_VERSION=1:4:0
++AC_SUBST(FVH_DLL_VERSION)
++
++dnl Infos extracted from ftl/configure.in
++FTL_DLL_VERSION=1:4:0
++AC_SUBST(FTL_DLL_VERSION)
++
++dnl Infos extracted from rtn/configure.in
++RTN_DLL_VERSION=1:1:0
++AC_SUBST(RTN_DLL_VERSION)
++
++dnl Infos extracted from rtd/configure.in
++RTD_DLL_VERSION=1:1:0
++AC_SUBST(RTD_DLL_VERSION)
++
++dnl Infos extracted from scl/configure.in
++SCL_DLL_VERSION=1:5:0
++AC_SUBST(SCL_DLL_VERSION)
++
++dnl Infos extracted from vbh/configure.in
++VBH_DLL_VERSION=1:4:0
++AC_SUBST(VBH_DLL_VERSION)
++
++dnl Infos extracted from vbl/configure.in
++VBL_DLL_VERSION=1:4:0
++AC_SUBST(VBL_DLL_VERSION)
++
++dnl Infos extracted from vpn/configure.in
++VPN_DLL_VERSION=1:5:0
++AC_SUBST(VPN_DLL_VERSION)
++
++dnl Infos extracted from vpd/configure.in
++VPD_DLL_VERSION=1:5:0
++AC_SUBST(VPD_DLL_VERSION)
++
++dnl Infos extracted from vvh/configure.in
++VVH_DLL_VERSION=1:5:0
++AC_SUBST(VVH_DLL_VERSION)
++
++dnl Infos extracted from vtl/configure.in
++VTL_DLL_VERSION=1:5:0
++AC_SUBST(VTL_DLL_VERSION)
++
++dnl Infos extracted from pat/configure.in
++PAT_DLL_VERSION=1:9:0
++AC_SUBST(PAT_DLL_VERSION)
++
++dnl Infos extracted from ppt/configure.in
++PPT_DLL_VERSION=1:9:0
++AC_SUBST(PPT_DLL_VERSION)
++
++dnl Infos extracted from phl/configure.in
++PHL_DLL_VERSION=1:9:0
++AC_SUBST(PHL_DLL_VERSION)
++
++dnl Infos extracted from druc/configure.in
++VRD_DLL_VERSION=3:4:0
++AC_SUBST(VRD_DLL_VERSION)
++
++dnl Infos extracted from beh/configure.in
++BEH_DLL_VERSION=1:11:0
++AC_SUBST(BEH_DLL_VERSION)
++
++dnl Infos extracted from bhl/configure.in
++BHL_DLL_VERSION=1:11:0
++AC_SUBST(BHL_DLL_VERSION)
++
++dnl Infos extracted from bvl/configure.in
++BVL_DLL_VERSION=1:14:0
++AC_SUBST(BVL_DLL_VERSION)
++
++dnl Infos extracted from alcban/configure.in
++ALCBANNER_MAJOR_VERSION=1
++AC_SUBST(ALCBANNER_MAJOR_VERSION)
++ALCBANNER_MINOR_VERSION=1
++AC_SUBST(ALCBANNER_MINOR_VERSION)
++ALCBANNER_VERSION=$ALCBANNER_MAJOR_VERSION.$ALCBANNER_MINOR_VERSION
++AC_SUBST(ALCBANNER_VERSION)
++
++dnl Infos extracted from asimut/configure.in
++CST_DLL_VERSION=3:2:0
++AC_SUBST(CST_DLL_VERSION)
++SCH_DLL_VERSION=3:2:0
++AC_SUBST(SCH_DLL_VERSION)
++
++dnl Infos extracted from attila/configure.in
++ATTILA_MAJOR_VERSION=0
++AC_SUBST(ATTILA_MAJOR_VERSION)
++ATTILA_MINOR_VERSION=1
++AC_SUBST(ATTILA_MINOR_VERSION)
++ATTILA_VERSION=$ATTILA_MAJOR_VERSION.$ATTILA_MINOR_VERSION
++AC_SUBST(ATTILA_VERSION)
++
++dnl Infos extracted from b2f/configure.in
++B2F_MAJOR_VERSION=1
++AC_SUBST(B2F_MAJOR_VERSION)
++B2F_MINOR_VERSION=2
++AC_SUBST(B2F_MINOR_VERSION)
++B2F_VERSION=$B2F_MAJOR_VERSION.$B2F_MINOR_VERSION
++AC_SUBST(B2F_VERSION)
++
++dnl Infos extracted from boog/configure.in
++BOOG_MAJOR_VERSION=1
++AC_SUBST(BOOG_MAJOR_VERSION)
++BOOG_MINOR_VERSION=7
++AC_SUBST(BOOG_MINOR_VERSION)
++BOOG_VERSION=$BOOG_MAJOR_VERSION.$BOOG_MINOR_VERSION
++AC_SUBST(BOOG_VERSION)
++
++dnl Infos extracted from boom/configure.in
++BOOM_MAJOR_VERSION=1
++AC_SUBST(BOOM_MAJOR_VERSION)
++BOOM_MINOR_VERSION=2
++AC_SUBST(BOOM_MINOR_VERSION)
++BOOM_VERSION=$BOOM_MAJOR_VERSION.$BOOM_MINOR_VERSION
++AC_SUBST(BOOM_VERSION)
++
++dnl Infos extracted from cells/configure.in
++
++dnl Infos extracted from distrib/configure.in
++
++dnl Infos extracted from dreal/configure.in
++DREAL_MAJOR_VERSION=1
++AC_SUBST(DREAL_MAJOR_VERSION)
++DREAL_MINOR_VERSION=14
++AC_SUBST(DREAL_MINOR_VERSION)
++DREAL_VERSION=$DREAL_MAJOR_VERSION.$DREAL_MINOR_VERSION
++AC_SUBST(DREAL_VERSION)
++
++dnl Infos extracted from exp/configure.in
++EXP_MAJOR_VERSION=1
++AC_SUBST(EXP_MAJOR_VERSION)
++EXP_MINOR_VERSION=0
++AC_SUBST(EXP_MINOR_VERSION)
++EXP_VERSION=$EXP_MAJOR_VERSION.$EXP_MINOR_VERSION
++AC_SUBST(EXP_VERSION)
++
++dnl Infos extracted from flatbeh/configure.in
++FLATBEH_MAJOR_VERSION=1
++AC_SUBST(FLATBEH_MAJOR_VERSION)
++FLATBEH_MINOR_VERSION=1
++AC_SUBST(FLATBEH_MINOR_VERSION)
++FLATBEH_VERSION=$FLATBEH_MAJOR_VERSION.$FLATBEH_MINOR_VERSION
++AC_SUBST(FLATBEH_VERSION)
++
++dnl Infos extracted from flatlo/configure.in
++
++dnl Infos extracted from flatph/configure.in
++
++dnl Infos extracted from fmi/configure.in
++FMI_MAJOR_VERSION=1
++AC_SUBST(FMI_MAJOR_VERSION)
++FMI_MINOR_VERSION=1
++AC_SUBST(FMI_MINOR_VERSION)
++FMI_VERSION=$FMI_MAJOR_VERSION.$FMI_MINOR_VERSION
++AC_SUBST(FMI_VERSION)
++
++dnl Infos extracted from fsp/configure.in
++FSP_MAJOR_VERSION=1
++AC_SUBST(FSP_MAJOR_VERSION)
++FSP_MINOR_VERSION=1
++AC_SUBST(FSP_MINOR_VERSION)
++FSP_VERSION=$FSP_MAJOR_VERSION.$FSP_MINOR_VERSION
++AC_SUBST(FSP_VERSION)
++
++dnl Infos extracted from genlib/configure.in
++MGN_DLL_VERSION=3:3:0
++AC_SUBST(MGN_DLL_VERSION)
++
++dnl Infos extracted from genpat/configure.in
++PGN_DLL_VERSION=3:3:0
++AC_SUBST(PGN_DLL_VERSION)
++
++dnl Infos extracted from graal/configure.in
++GRAAL_MAJOR_VERSION=1
++AC_SUBST(GRAAL_MAJOR_VERSION)
++GRAAL_MINOR_VERSION=27
++AC_SUBST(GRAAL_MINOR_VERSION)
++GRAAL_VERSION=$GRAAL_MAJOR_VERSION.$GRAAL_MINOR_VERSION
++AC_SUBST(GRAAL_VERSION)
++
++dnl Infos extracted from k2f/configure.in
++K2F_MAJOR_VERSION=1
++AC_SUBST(K2F_MAJOR_VERSION)
++K2F_MINOR_VERSION=1
++AC_SUBST(K2F_MINOR_VERSION)
++K2F_VERSION=$K2F_MAJOR_VERSION.$K2F_MINOR_VERSION
++AC_SUBST(K2F_VERSION)
++
++dnl Infos extracted from l2p/configure.in
++L2P_MAJOR_VERSION=1
++AC_SUBST(L2P_MAJOR_VERSION)
++L2P_MINOR_VERSION=12
++AC_SUBST(L2P_MINOR_VERSION)
++L2P_VERSION=$L2P_MAJOR_VERSION.$L2P_MINOR_VERSION
++AC_SUBST(L2P_VERSION)
++
++dnl Infos extracted from loon/configure.in
++LOON_MAJOR_VERSION=1
++AC_SUBST(LOON_MAJOR_VERSION)
++LOON_MINOR_VERSION=7
++AC_SUBST(LOON_MINOR_VERSION)
++LOON_VERSION=$LOON_MAJOR_VERSION.$LOON_MINOR_VERSION
++AC_SUBST(LOON_VERSION)
++
++dnl Infos extracted from lvx/configure.in
++LVX_MAJOR_VERSION=1
++AC_SUBST(LVX_MAJOR_VERSION)
++LVX_MINOR_VERSION=2
++AC_SUBST(LVX_MINOR_VERSION)
++LVX_VERSION=$LVX_MAJOR_VERSION.$LVX_MINOR_VERSION
++AC_SUBST(LVX_VERSION)
++
++dnl Infos extracted from lynx/configure.in
++LYNX_MAJOR_VERSION=1
++AC_SUBST(LYNX_MAJOR_VERSION)
++LYNX_MINOR_VERSION=21
++AC_SUBST(LYNX_MINOR_VERSION)
++LYNX_VERSION=$LYNX_MAJOR_VERSION.$LYNX_MINOR_VERSION
++AC_SUBST(LYNX_VERSION)
++
++dnl Infos extracted from m2e/configure.in
++M2E_MAJOR_VERSION=1
++AC_SUBST(M2E_MAJOR_VERSION)
++M2E_MINOR_VERSION=0
++AC_SUBST(M2E_MINOR_VERSION)
++M2E_VERSION=$M2E_MAJOR_VERSION.$M2E_MINOR_VERSION
++AC_SUBST(M2E_VERSION)
++
++dnl Infos extracted from mips_asm/configure.in
++MIPS_ASM_MAJOR_VERSION=1
++AC_SUBST(MIPS_ASM_MAJOR_VERSION)
++MIPS_ASM_MINOR_VERSION=0
++AC_SUBST(MIPS_ASM_MINOR_VERSION)
++MIPS_ASM_VERSION=$MIPS_ASM_MAJOR_VERSION.$MIPS_ASM_MINOR_VERSION
++AC_SUBST(MIPS_ASM_VERSION)
++
++dnl Infos extracted from mocha/configure.in
++MOCHA_MAJOR_VERSION=1
++AC_SUBST(MOCHA_MAJOR_VERSION)
++MOCHA_MINOR_VERSION=1
++AC_SUBST(MOCHA_MINOR_VERSION)
++MOCHA_VERSION=$MOCHA_MAJOR_VERSION.$MOCHA_MINOR_VERSION
++AC_SUBST(MOCHA_VERSION)
++
++dnl Infos extracted from nero/configure.in
++NERO_MAJOR_VERSION=1
++AC_SUBST(NERO_MAJOR_VERSION)
++NERO_MINOR_VERSION=1
++AC_SUBST(NERO_MINOR_VERSION)
++NERO_VERSION=$NERO_MAJOR_VERSION.$NERO_MINOR_VERSION
++AC_SUBST(NERO_VERSION)
++
++dnl Infos extracted from ocp/configure.in
++OCP_MAJOR_VERSION=1
++AC_SUBST(OCP_MAJOR_VERSION)
++OCP_MINOR_VERSION=0
++AC_SUBST(OCP_MINOR_VERSION)
++OCP_VERSION=$OCP_MAJOR_VERSION.$OCP_MINOR_VERSION
++AC_SUBST(OCP_VERSION)
++
++dnl Infos extracted from pat2spi/configure.in
++PAT2SPI_MAJOR_VERSION=1
++AC_SUBST(PAT2SPI_MAJOR_VERSION)
++PAT2SPI_MINOR_VERSION=1
++AC_SUBST(PAT2SPI_MINOR_VERSION)
++PAT2SPI_VERSION=$PAT2SPI_MAJOR_VERSION.$PAT2SPI_MINOR_VERSION
++AC_SUBST(PAT2SPI_VERSION)
++
++dnl Infos extracted from proof/configure.in
++PROOF_MAJOR_VERSION=4
++AC_SUBST(PROOF_MAJOR_VERSION)
++PROOF_MINOR_VERSION=9
++AC_SUBST(PROOF_MINOR_VERSION)
++PROOF_VERSION=$PROOF_MAJOR_VERSION.$PROOF_MINOR_VERSION
++AC_SUBST(PROOF_VERSION)
++
++dnl Infos extracted from ring/configure.in
++RING_MAJOR_VERSION=3
++AC_SUBST(RING_MAJOR_VERSION)
++RING_MINOR_VERSION=0
++AC_SUBST(RING_MINOR_VERSION)
++RING_VERSION=$RING_MAJOR_VERSION.$RING_MINOR_VERSION
++AC_SUBST(RING_VERSION)
++
++dnl Infos extracted from s2r/configure.in
++S2R_MAJOR_VERSION=4
++AC_SUBST(S2R_MAJOR_VERSION)
++S2R_MINOR_VERSION=4
++AC_SUBST(S2R_MINOR_VERSION)
++S2R_VERSION=$S2R_MAJOR_VERSION.$S2R_MINOR_VERSION
++AC_SUBST(S2R_VERSION)
++
++dnl Infos extracted from scapin/configure.in
++SCAPIN_MAJOR_VERSION=1
++AC_SUBST(SCAPIN_MAJOR_VERSION)
++SCAPIN_MINOR_VERSION=1
++AC_SUBST(SCAPIN_MINOR_VERSION)
++SCAPIN_VERSION=$SCAPIN_MAJOR_VERSION.$SCAPIN_MINOR_VERSION
++AC_SUBST(SCAPIN_VERSION)
++
++dnl Infos extracted from sea/configure.in
++SEA_MAJOR_VERSION=1
++AC_SUBST(SEA_MAJOR_VERSION)
++SEA_MINOR_VERSION=0
++AC_SUBST(SEA_MINOR_VERSION)
++SEA_VERSION=$SEA_MAJOR_VERSION.$SEA_MINOR_VERSION
++AC_SUBST(SEA_VERSION)
++
++dnl Infos extracted from syf/configure.in
++SYF_MAJOR_VERSION=3
++AC_SUBST(SYF_MAJOR_VERSION)
++SYF_MINOR_VERSION=6
++AC_SUBST(SYF_MINOR_VERSION)
++SYF_VERSION=$SYF_MAJOR_VERSION.$SYF_MINOR_VERSION
++AC_SUBST(SYF_VERSION)
++
++dnl Infos extracted from vasy/configure.in
++VASY_MAJOR_VERSION=1
++AC_SUBST(VASY_MAJOR_VERSION)
++VASY_MINOR_VERSION=5
++AC_SUBST(VASY_MINOR_VERSION)
++VASY_VERSION=$VASY_MAJOR_VERSION.$VASY_MINOR_VERSION
++AC_SUBST(VASY_VERSION)
++
++dnl Infos extracted from x2y/configure.in
++
++dnl Infos extracted from xfsm/configure.in
++XFSM_MAJOR_VERSION=1
++AC_SUBST(XFSM_MAJOR_VERSION)
++XFSM_MINOR_VERSION=4
++AC_SUBST(XFSM_MINOR_VERSION)
++XFSM_VERSION=$XFSM_MAJOR_VERSION.$XFSM_MINOR_VERSION
++AC_SUBST(XFSM_VERSION)
++
++dnl Infos extracted from xgra/configure.in
++XGRA_MAJOR_VERSION=1
++AC_SUBST(XGRA_MAJOR_VERSION)
++XGRA_MINOR_VERSION=5
++AC_SUBST(XGRA_MINOR_VERSION)
++XGRA_VERSION=$XGRA_MAJOR_VERSION.$XGRA_MINOR_VERSION
++AC_SUBST(XGRA_VERSION)
++
++dnl Infos extracted from xpat/configure.in
++XPAT_MAJOR_VERSION=1
++AC_SUBST(XPAT_MAJOR_VERSION)
++XPAT_MINOR_VERSION=4
++AC_SUBST(XPAT_MINOR_VERSION)
++XPAT_VERSION=$XPAT_MAJOR_VERSION.$XPAT_MINOR_VERSION
++AC_SUBST(XPAT_VERSION)
++
++dnl Infos extracted from xsch/configure.in
++XSCH_MAJOR_VERSION=1
++AC_SUBST(XSCH_MAJOR_VERSION)
++XSCH_MINOR_VERSION=4
++AC_SUBST(XSCH_MINOR_VERSION)
++XSCH_VERSION=$XSCH_MAJOR_VERSION.$XSCH_MINOR_VERSION
++AC_SUBST(XSCH_VERSION)
++
++dnl Infos extracted from xvpn/configure.in
++XVPN_MAJOR_VERSION=1
++AC_SUBST(XVPN_MAJOR_VERSION)
++XVPN_MINOR_VERSION=5
++AC_SUBST(XVPN_MINOR_VERSION)
++XVPN_VERSION=$XVPN_MAJOR_VERSION.$XVPN_MINOR_VERSION
++AC_SUBST(XVPN_VERSION)
++
++dnl Infos extracted from documentation/configure.in
++DOC_MAJOR_VERSION=1
++AC_SUBST(DOC_MAJOR_VERSION)
++DOC_MINOR_VERSION=0
++AC_SUBST(DOC_MINOR_VERSION)
++DOC_VERSION=$DOC_MAJOR_VERSION.$DOC_MINOR_VERSION
++AC_SUBST(DOC_VERSION)
++

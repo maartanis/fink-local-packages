@@ -1,0 +1,26 @@
+Info2: <<
+Package: io-sessiondata-pm
+Version: 1.03
+Revision: 1
+
+Type: perl
+
+Description: Portably create pipe or pipe-like handles
+License: Artistic/GPL
+Maintainer: Daniel Johnson <daniel@daniel-johnson.org>
+Homepage: http://search.cpan.org/dist/IO-SessionData/
+
+BuildDepends: fink (>= 0.29.0)
+
+Source: mirror:cpan:authors/id/P/PH/PHRED/IO-SessionData-%v.tar.gz
+Source-MD5: 790f9e05465c774cf9a6299500463104
+
+InstallScript: <<
+  %{default_script}
+#	mv %i/share/man %i/lib/perl5
+<<
+
+UpdatePOD: true
+DocFiles: Changes MANIFEST README
+
+<<

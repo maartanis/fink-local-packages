@@ -1,0 +1,17 @@
+Description: Fix wrong libdir usage
+ The configure value from --libdir was used wrongly, being added to nero_LDADD.
+ If an old version of (binary) alliance was installed, this led to FTBFS in the
+ linking stage. This patch removes this LDADD -L option.
+Author: Roland Stigge <stigge@antcom.de>
+
+--- alliance-5.1.1.orig/nero/src/Makefile.am
++++ alliance-5.1.1/nero/src/Makefile.am
+@@ -21,7 +21,7 @@ AM_CFLAGS        = @ALLIANCE_CFLAGS@ \
+ bin_PROGRAMS     = nero pdv
+ #noinst_PROGRAMS  = debug
+ 
+-nero_LDADD       = -L$(libdir) @ALLIANCE_LIBS@  \
++nero_LDADD       = @ALLIANCE_LIBS@  \
+                    ./libU.a     \
+                    -L$(top_builddir)/aut/src/.libs \
+                    -L$(top_builddir)/mbk/src/.libs \

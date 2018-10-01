@@ -1,0 +1,111 @@
+Package: xdev-toolkit
+Version: 2015-4264
+Revision: 3
+Description: Delphi -> Lazarus/FPC conversion tools
+Depends: <<
+  fpc (>=3.0.2), 
+  lazarus-gtk2 (>=1.6) | lazarus-qt4 (>=1.6) | lazarus-lcl-gtk2 (>=1.6) | lazarus-lcl-qt4 (>=1.6)
+<<
+License: LGPL
+
+# Unpack Phase:
+Source: http://michael-ep3.physik.uni-halle.de/fink-sources/lazarus-ccr-xdev_toolkit-%v.zip
+Source-MD5: c368ebc29ad293d82266e620f352e0da
+
+SourceDirectory: xdev_toolkit
+
+# Patch Phase
+PatchScript: <<
+# set the path for ini file for dfmtolfm
+  sed -i.bak "s|ExtractFilePath(ParamStr(0))|'%p/etc/'|g" dfmtolfm.pas
+# replace removed function Shell by fpsystem
+  sed -i.bak "s|Shell|fpsystem|g" ViewDoc.pas
+  sed -i.bak "s|Shell|fpsystem|g" HelpUtil.pas
+<<
+
+# Compile Phase (NOTE: there is no configure):
+CompileScript: <<
+#!/bin/sh -ev
+
+# compile programs
+fpc CvtHelp.pas
+fpc TestRtfDoc.pas
+fpc ViewWith.pas
+fpc dfmtolfm.pas
+fpc makepasx.pas
+fpc makever.pas
+
+# compile additional units
+fpc PrefsUtil.pas
+fpc PropListUtil.pas
+fpc -MDelphi HelpUtil.pas -Fu%p/share/lazarus/lcl/units/%m-darwin/ -Fu%p/share/lazarus/components/lazutils/lib/%m-darwin/
+<<
+
+# Install Phase:
+InstallScript: <<
+#!/bin/sh -ev
+
+# Install programs
+  mkdir %i/bin
+  install -m 755 CvtHelp           %i/bin/CvtHelp
+  install -m 755 TestRtfDoc        %i/bin/TestRtfDoc
+  install -m 755 ViewWith          %i/bin/ViewWith
+  install -m 755 dfmtolfm          %i/bin/dfmtolfm
+  install -m 755 makepasx          %i/bin/makepasx
+  install -m 755 makever           %i/bin/makever
+  install -m 755 create_app_mac.sh %i/bin/create_app_mac.sh
+
+# Install units
+  FPC_VERSION=`fpc -iV`
+  INSTALL_DIR=%i/lib/fpc/$FPC_VERSION/units/%m-darwin/%n
+  mkdir -p $INSTALL_DIR
+  install -m 644 HelpUtil.o       $INSTALL_DIR
+  install -m 644 HelpUtil.ppu     $INSTALL_DIR
+  install -m 644 RtfDoc.o         $INSTALL_DIR
+  install -m 644 RtfDoc.ppu       $INSTALL_DIR
+  install -m 644 ViewDoc.o        $INSTALL_DIR
+  install -m 644 ViewDoc.ppu      $INSTALL_DIR
+  install -m 644 PrefsUtil.o      $INSTALL_DIR
+  install -m 644 PrefsUtil.ppu    $INSTALL_DIR
+  install -m 644 PropListUtil.o   $INSTALL_DIR
+  install -m 644 PropListUtil.ppu $INSTALL_DIR
+
+# Install sources
+  mkdir -p %i/share/fpcsrc/%n
+  install -m 644 *.pas %i/share/fpcsrc/%n/
+  install -d %i/etc/
+  install -c -m 666 dfmtolfm.ini %i/etc/
+<<
+
+ConfFiles: %p/etc/dfmtolfm.ini
+DocFiles: XDevStatus.html ReadMe.txt filelist.txt
+
+DescDetail: <<
+The XDev Toolkit has these programs:
+
+makepasx & dfmtolfm:   Delphi converters
+makever:               Create a version info file
+create_app_mac.sh:     Create an app bundle
+CvtHelp:               Convert WinHelp RTF to HTML
+TestRtfDoc & ViewWith: RTF document creation and viewing
+
+and these units:
+
+HelpUtil:                 Convert WinHelp RTF to HTML
+RtfDoc & ViewDoc:         RTF document creation and viewing
+PrefsUtil & PropListUtil: Preferences
+<<
+
+DescUsage: <<
+  Please read the documentation in 
+  file://%p/share/doc/%n/XDevStatus.html
+<<
+
+DescPort: <<
+  Note: This package installs fpc units 
+  and needs to be updated with a new version of fpc.
+  Native platform only. To do: cross-platform
+<<
+
+Homepage: http://wiki.freepascal.org/XDev_Toolkit
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

@@ -1,0 +1,53 @@
+Info2: <<
+
+Package:  htop
+Version:  1.0.3
+Revision: 2
+Type: gcc (7)
+Description:   Interactive process viewer
+#BuildDepends: gcc%type_pkg[gcc]-compiler
+#Depends:      gcc%type_pkg[gcc]-shlibs
+License:       OSI-Approved
+
+# Unpack Phase:
+Source: http://hisham.hm/%n/releases/%v/%n-%v.tar.gz
+Source-MD5: e768b9b55c033d9c1dffda72db3a6ac7
+
+# Patch Phase
+#PatchScript: <<
+#!/bin/sh -ev
+# some compilers can only take filenames in capital letters
+#  mv tidy.inc TIDY.INC
+#  mv units.inc UNITS.INC
+#  sed -i.bak 's|tidy.inc|TIDY.INC|g' tidy.for
+#  sed -i.bak 's|units.inc|UNITS.INC|g' tidy.for
+#<<
+
+# Compile Phase:
+#CompileScript: <<
+#!/bin/sh -ev
+#  gfortran-fsf-%type_raw[gcc] -fdiagnostics-color=always -o ftidy tidy.for
+#<<
+
+# Install Phase:
+#DocFiles: *.txt
+#ConfFiles: %p/bin/tidy.ini
+
+#InstallScript: <<
+#!/bin/sh -ev
+# programs
+#  mkdir -p %i/bin
+#  install    -m 755 ftidy    %i/bin/
+#  install -c -m 666 tidy.ini %i/bin/
+#<<
+
+DescDetail: <<
+  htop???
+<<
+
+DescUsage:  htop must be executed as sudo.
+DescPort:   blabla
+Homepage:   http://hisham.hm/htop/
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>
+
+<<

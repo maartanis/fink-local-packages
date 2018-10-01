@@ -1,0 +1,49 @@
+Info2: <<
+Package: arm-netbsd-binutils
+Version: 2.26.1
+Revision: 1
+Description: GNU binutils for arm-netbsd
+License: LGPL
+# .xz archive needs a newer fink
+Depends: fink (>= 0.32)
+
+Source: mirror:gnu:binutils/binutils-%v.tar.bz2
+Source-MD5: d2b24e5b5301b7ff0207414c34c3e0fb
+
+SourceDirectory: binutils-%v
+
+ConfigureParams: <<
+  --target=arm-netbsdelf-gnu             \
+  --prefix=%p/lib/arm-netbsd                       \
+  --bindir=%p/bin --mandir=%p/share/man --infodir=%p/share/info \
+  --program-prefix=arm-netbsd-                     \
+  --disable-werror --disable-nls
+<<
+
+CompileScript: <<
+#!/bin/sh -ev
+  ./configure %c
+  num_cpu=$(echo `sysctl -n hw.ncpu`)
+  make -j $num_cpu CFLAGS=-Wno-extended-offsetof
+<<
+
+InstallScript: <<
+#!/bin/sh -ev
+  make install DESTDIR=%d
+  rm -fr %i/lib/arm-netbsd/lib/
+  rm -fr %i/share/info
+<<
+
+DocFiles: README COPYING* MAINTAINERS
+
+DescPort: <<
+Like 'avr-binutils' package, lib & include folders have been moved to 
+/sw/lib/arm-netbsd and the binaries are put into /sw/bin.
+All xxx.info files are removed to avoid clashes with other potential
+toolchains.
+<<
+
+Homepage: http://www.gnu.org/software/binutils/
+
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>
+<<

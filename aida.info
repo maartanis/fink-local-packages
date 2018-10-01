@@ -1,0 +1,52 @@
+Package: aida
+Version: 3.2.1
+Revision: 1
+Description: Abstract Interfaces for Data Analysis
+BuildDepends: ant, fink-package-precedence
+License: LGPL
+
+# Unpack Phase:
+Source: ftp://ftp.slac.stanford.edu/software/freehep/AIDA/v%v/%n-%v.tar.gz
+Source-MD5: 1db1f8d984cdb9c73ba9355c5fdfe8cc
+
+NoSourceDirectory: true
+
+# Compile Phase
+CompileScript: <<
+#!/bin/sh -ev
+  ant all
+  fink-package-precedence --no-headers .
+<<
+
+# Install Phase:
+InstallScript: <<
+#!/bin/sh -ev
+  %{default_script}
+<<
+
+DocFiles: ReadMe
+
+InfoTest: <<
+  TestScript: make check || exit 2
+<<
+
+DescDetail: <<
+  AIDA is a collection of abstract interfaces for common physics analysis
+  objects, such as histograms, ntuples, fitters, IO etc...  The adoption of
+  these interfaces should make it easier for physicists to use different
+  tools without having to learn new interfaces or change all of their code.
+  Additional benefits will be interoperability of AIDA compliant
+  applications (for example by making it possible for applications to
+  exchange analysis objects via XML).
+<<
+
+DescUsage: <<
+  Template
+<<
+
+DescPort: <<
+  Template
+<<
+
+Homepage: http://www.template.org/template
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

@@ -1,0 +1,39 @@
+Info2: <<
+
+Package: coveralls-py%type_pkg[python]
+Version: 1.3.0
+Revision: 1
+License: OSI-Approved
+Type: python (2.7 3.4 3.5 3.6 3.7)
+
+Depends: python%type_pkg[python]
+BuildDepends: setuptools-tng-py%type_pkg[python]
+
+Source: https://files.pythonhosted.org/packages/source/c/coveralls/coveralls-%v.tar.gz
+Source-MD5: 55adf9a5b307d2585a87ab2d553bf58d
+
+CompileScript: %p/bin/python%type_raw[python] setup.py build
+InstallScript: <<
+  %p/bin/python%type_raw[python] setup.py install --root=%d
+  # rename binary to version specific one
+  mv %i/bin/coveralls  %i/bin/coveralls-py%type_pkg[python]
+<<
+
+DocFiles: <<
+  LICENSE.txt
+  PKG-INFO
+  README.rst
+<<
+
+Description: Show coverage stats online via coveralls.io
+DescDetail: <<
+coveralls.io is a service for publishing your coverage stats online.  This
+package provides seamless integration with coverage.py (and thus py.test,
+nosetests, etc ...) in your Python projects.
+<<
+
+DescPort: source contains no test
+Homepage: https://github.com/coveralls-clients/coveralls-python
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>
+# Info2
+<<

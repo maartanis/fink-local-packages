@@ -1,0 +1,65 @@
+Info2: <<
+
+Package: demeter
+Version: 0.9.26
+
+Revision: 1
+Homepage: http://bruceravel.github.io/demeter/
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>
+
+Source: https://github.com/bruceravel/%n/archive/%v.tar.gz
+Source-MD5: e54f95d38731d27d0104ec64b0028101
+SourceRename: %n-%v.tar.gz
+
+Depends: <<
+  ifeffit | xraylarch-py36,
+  chemistry-elements-pm,
+  const-fast-pm5182,
+  graph-pm,
+  heap-pm,
+  math-combinatorics-pm,
+  opengl-pm5182,
+  pdl-pm5182,
+  pod-pom-pm5182,
+  rpc-xml-pm5182,
+  regexp-assemble-pm,
+  spreadsheet-writeexcel-pm,
+  statistics-descriptive-pm,
+  tree-simple-pm,
+  want-pm5182,
+  yaml-tiny-pm
+<<
+# PDL PDL::Stats
+CompileScript: <<
+#!/bin/bash -ev
+  perl Build.PL 
+  ./Build installdeps
+  perl Build.PL 
+<<
+
+InstallScript: <<
+#!/bin/bash -ev
+  ./Build
+  ./Build install
+<<
+
+DocFiles: <<
+  Changes.org
+  COPYRIGHT.STAR-Parser
+  INSTALL
+  LICENSE
+  MANIFEST*
+  README.md
+  documentation
+  todo.org
+<<
+
+License: BSD
+Description: Analyze x-ray absorption spectroscopy data
+DescDetail: <<
+Process and analyze x-ray absorption spectroscopy data using Feff 
+and Larch/Ifeffit.
+<<
+
+# Info2
+<<

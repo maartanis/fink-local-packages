@@ -1,0 +1,175 @@
+Package: fpc-cross-arm-iphone
+Version: 3.0.4
+Revision: 1
+Depends: fpc-cross-common (>= 3.0.4-1), fpc-cross-common (<< 2.6.6-1)
+Recommends: fpc-doc
+
+CustomMirror: <<
+eur-BE: ftp://ftp.freepascal.org/pub/fpc/
+eur-HU: ftp://ftp.hu.freepascal.org/pub/fpc/
+eur-NL: ftp://freepascal.stack.nl/mirrors/fpc/
+Primary: ftp://ftp.freepascal.org/pub/fpc/
+<<
+Source: mirror:custom:/dist/%v/source/fpc-%v.source.tar.gz
+Source-MD5: bc8c2b53cf0816c3bea39f27fb104b31
+
+SourceDirectory: fpc-%v
+
+Patchscript: <<
+#!/bin/sh -ev
+
+# preliminary fix of fcl-base Makefile. Can probably be removed with newer tarball.
+#  sed -i.bak 's|src/win|src/dummy|g' packages/fcl-base/Makefile
+<<
+
+UseMaxBuildJobs: false
+
+CompileScript: <<
+#!/bin/sh -ev
+# create the file sig_cpu.inc taken from trunk. maybe included in next version.
+cat >%b/rtl/darwin/arm/sig_cpu.inc <<EOFCFG
+{$IFDEF FPC}
+{$PACKRECORDS C}
+{$ENDIF}
+
+  type
+     __darwin_arm_exception_state = record
+          __exception : cuint32;
+          __fsr : cuint32;
+          __far : cuint32;
+       end;
+
+     __darwin_arm_thread_state = record
+          __r : array[0..12] of cuint32;
+          __sp : cuint32;
+          __lr : cuint32;
+          __pc : cuint32;
+          __cpsr : cuint32;
+       end;
+
+     __darwin_arm_vfp_state = record
+          __r : array[0..63] of cuint32;
+          __fpscr : cuint32;
+       end;
+
+     __darwin_arm_debug_state = record
+          __bvr : array[0..15] of cuint32;
+          __bcr : array[0..15] of cuint32;
+          __wvr : array[0..15] of cuint32;
+          __wcr : array[0..15] of cuint32;
+       end;
+
+     mcontext_t = record
+          __es : __darwin_arm_exception_state;
+          __ss : __darwin_arm_thread_state;
+          __fs : __darwin_arm_vfp_state;
+       end;
+EOFCFG
+
+# find the directory "iPhoneOS.platform/Developer"
+TOOLS_PATH=`find /Applications -name 'Developer' | grep iPhoneOS\.platform |grep -v SDKs |grep -v Symbols`
+
+# let's take the latest version of the iPhone SDK
+SDK=`find $TOOLS_PATH/SDKs/ -name 'iPhoneOS*.sdk' |tail -n 1`
+
+# Yosemite fix
+  if [ "$(uname -r | cut -d. -f1)" -ge 14 ]; then export MACOSX_DEPLOYMENT_TARGET=10.9 ; fi
+
+# compile the rtl and packages ************ is -XR really needed? ***************
+  make rtl      OPT="-ap" PP=ppcarm CPU_TARGET=arm OS_TARGET=darwin CROSSOPT="-FD$TOOLS_PATH/usr/bin -XR$SDK/ -ap"
+#  make packages OPT="-ap" PP=ppcarm CPU_TARGET=arm OS_TARGET=darwin CROSSOPT="-FD$TOOLS_PATH/usr/bin -XR$SDK/ -ap"
+<<
+
+InstallScript: <<
+#!/bin/sh -ev
+# install all units from the rtl and packages
+
+# leftovers from the build script. Is this checked?
+#symlinks for
+#as
+#ar
+#c++
+#cc
+#cpp
+#g++
+#gcc
+#gdb
+#gprof
+#install_name_tool
+#ld
+#libtool
+#lipo
+#nm
+#otool
+#ranlib
+#size
+#strings
+#strip
+#
+#short cut symlinks for -FD/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin  KMS: I don't think this is needed
+#short cut symlinks for -XR/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/
+
+  make rtl_install      OS_TARGET=darwin CPU_TARGET=arm INSTALL_PREFIX=%i CROSSINSTALL=1 PP=ppcarm
+#  make packages_install OS_TARGET=darwin CPU_TARGET=arm INSTALL_PREFIX=%i CROSSINSTALL=1 PP=ppcarm
+
+# remove duplicate doc files
+  rm %i/share/doc/fpc-%v/symbolic/*.txt
+
+<<
+
+InfoTest: <<
+
+  TestScript: <<
+#!/bin/sh -ev
+# Build a trivial small program to test for fundamental flaws
+
+cat >HelloWorld.pas <<EOFTEST
+  Program HelloWorld;
+  begin
+    writeln ('Hello World!');
+  end.
+EOFTEST
+
+fpc -Parm -Tdarwin -Furtl/units/arm-darwin HelloWorld.pas
+<<
+<<
+License: GPL/LGPL
+
+Description: FPC cross-compiler arm-darwin for iOS
+
+DescDetail: <<
+Free Pascal (aka FPK Pascal) is a 32 and 64 bit professional Pascal
+compiler. Supported processors: Intel x86, Amd64/x86 64, PowerPC, 
+Sparc, Arm.
+Supported operating systems: Linux, FreeBSD, Mac OS X/Darwin, 
+DOS, Win32, Win64, Wince.
+
+The language syntax has excellent compatibility with TP 7.0 as well as 
+with most versions of Delphi (classes, rtti, exceptions, ansistrings,
+widestrings, interfaces). A Mac Pascal compatibility mode is also provided
+to assist users of previous Pascal compilers for the Mac. 
+Furthermore, Free Pascal supports function overloading, operator 
+overloading, global properties and other modern features.
+
+http://wiki.freepascal.org/User_Changes_%v also lists changes in fpc.
+<<
+
+DescUsage: <<
+ This Pascal crosscompiler produces arm executables, which run 
+ natively on arm-iOS systems.
+
+ get help with: fpc -h
+
+ compile and link a Pascal file with:
+ 
+ fpc -Tdarwin -Parm FILENAME
+
+ For more documentation about Free Pascal in HTML and pdf, install fpc-doc
+<<
+
+DescPort: <<
+<<
+
+Homepage: http://www.freepascal.org
+
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

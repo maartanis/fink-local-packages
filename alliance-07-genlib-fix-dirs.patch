@@ -1,0 +1,21 @@
+Description: Fix directories in genlib.sh
+ genlib.sh has (partially) hard-coded directories for ALLIANCE_INCLUDE and
+ ALLIANCE_LIB. This patch adjusts them to use /usr/include/alliance and
+ /usr/lib/alliance as done in debian/rules.
+Author: Roland Stigge <stigge@antcom.de>
+
+Index: alliance-5.0-20110203/genlib/src/genlib.sh
+===================================================================
+--- alliance-5.0-20110203.orig/genlib/src/genlib.sh	2002-10-24 12:28:32.000000000 +0200
++++ alliance-5.0-20110203/genlib/src/genlib.sh	2012-03-24 16:53:06.000000000 +0100
+@@ -237,8 +237,8 @@
+ # Start of the Makefile text.
+ 
+ cat << EOF > $MAKEFILE
+-  ALLIANCE_INCLUDE = $ALLIANCE_TOP/include
+-  ALLIANCE_LIB     = $ALLIANCE_TOP/lib
++  ALLIANCE_INCLUDE = $ALLIANCE_TOP/include/alliance
++  ALLIANCE_LIB     = $ALLIANCE_TOP/lib/alliance
+ 
+   LOCAL_ALC_IDIR = $ALLIANCE_DEVEL_INCLUDE -I\$(ALLIANCE_INCLUDE)
+   LOCAL_ALC_DEFS = 

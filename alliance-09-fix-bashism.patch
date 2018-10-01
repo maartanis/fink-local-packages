@@ -1,0 +1,26 @@
+Description: Fix bashisms
+ In attila/src/attila.sh, there is a bashism in l.196:
+  exec -a "$SELF" "$SELF" $*
+ therefore using /bin/bash as shell. See also:
+ https://wiki.ubuntu.com/DashAsBinSh
+ Similarly: sea/src/sea.sh:
+ export PATH; hash -r
+Author: Roland Stigge <stigge@antcom.de>
+Bug-Debian: http://bugs.debian.org/690623
+
+--- alliance-5.1.1.orig/attila/src/attila.sh
++++ alliance-5.1.1/attila/src/attila.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ #
+ # +------------------------------------------------------------------+
+ # |        A l l i a n c e   C A D   S y s t e m                     |
+--- alliance-5.1.1.orig/sea/src/sea.sh
++++ alliance-5.1.1/sea/src/sea.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ #
+ # $Id: sea.sh,v 1.6 2005/03/18 12:18:09 jpc Exp $
+ #

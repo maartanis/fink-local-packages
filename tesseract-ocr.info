@@ -1,0 +1,76 @@
+Package: tesseract-ocr
+Version: 3.02.02
+Revision: 1
+Description: OCR engine
+License: OSI-Approved
+
+# Dependencies:
+BuildDependsOnly: true
+BuildDepends: <<
+  libleptonica4-dev
+<<
+Depends: libtesseract3-shlibs (>= %v-1)
+
+# Unpack Phase:
+Source: http://%n.googlecode.com/files/%n-%v.tar.gz
+Source-MD5: 26adc8154f0e815053816825dde246e6
+
+Source2: http://%n.googlecode.com/files/%n-3.02.eng.tar.gz
+Source2-MD5: 3562250fe6f4e76229a329166b8ae853
+Source3: http://%n.googlecode.com/files/%n-3.02.deu.tar.gz
+Source3-MD5: 3562250fe6f4e76229a329166b8ae853
+
+SourceDirectory: %n
+
+# Compile Phase:
+CompileScript: <<
+#!/bin/sh -ev
+  ./configure %c LIBLEPT_HEADERSDIR=%p/include/leptonica
+  make
+<<
+
+# Install Phase:
+InstallScript: <<
+#!/bin/sh -ev
+  make install DESTDIR=%d
+<<
+
+DocFiles: AUTHORS ChangeLog COPYING INSTALL NEWS README ReleaseNotes
+
+SplitOff: <<
+  Package: libtesseract3-shlibs
+  Depends: <<
+    libleptonica4-shlibs
+  <<
+  Files: <<
+    lib/libtesseract.3.dylib
+	share/tessdata
+  <<
+  Shlibs: <<
+    %p/lib/libtesseract.3.dylib 4.0.0 %n (>= 3.02.02-1)
+  <<
+  DocFiles: AUTHORS ChangeLog COPYING INSTALL NEWS README ReleaseNotes
+<<
+
+Splitoff2: <<
+  Package: libtesseract3-dev
+  Depends: libtesseract3-shlibs (>= %v-1)
+  BuildDependsOnly: true
+  Files: <<
+    include
+	lib
+  <<
+  DocFiles: AUTHORS ChangeLog COPYING INSTALL NEWS README ReleaseNotes
+<<
+
+# Additional Info
+DescDetail: <<
+  Tesseract is an Open Source OCR engine and can be used directly, or 
+  (for programmers) using an API. It supports a wide variety of languages.
+<<
+
+DescPort: Include directory for leptonica needed to be specified explicitly.
+
+Homepage: http://code.google.com/p/tesseract-ocr
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>
+

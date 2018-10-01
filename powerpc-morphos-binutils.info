@@ -1,0 +1,72 @@
+Package: powerpc-morphos-binutils
+Version: 2.9.1
+Revision: 1
+BuildDepends: fink (>= 0.32), lha
+Description: GNU binutils for powerpc-morphos
+License: LGPL
+
+Source: http://www.morphos-team.net/files/src/sdk/sdk-source-20160605.tar.xz
+Source-MD5: f164164886e8c533a8da75eb7e938a9b
+NoSourceDirectory: true
+Source2: http://www.morphos-team.net/files/sdk-20160605.lha
+Source2-MD5: 01065678d791bb76b68cfa6f078ac9dd
+#Source2Rename: sdk-20160605.lhz
+
+PatchScript: <<
+#!/bin/sh -ev
+  mkdir tmpdir
+  mv binutils tmpdir
+  mkdir gg
+  cd tmpdir
+  lha -x ../sdk-20160605.lha morphossdk/sdk.pack
+  xz -dcf morphossdk/sdk.pack | (cd ../gg && tar --transform "s,^Development/GG/,," -x "Development/GG/ppc-morphos" "Development/GG/include" "Development/GG/includestd" "Development/GG/os-include")
+  pwd
+  tar -xf ../../../sdk-source-20160605.tar.xz binutils gcc4
+  cd ..
+  sed -i.bak 's|dummy.c 2>/dev/null|dummy.c|g' tmpdir/binutils/libiberty/Makefile.in
+  sed -i.bak 's|/gg|%p|g' tmpdir/binutils/configall
+  sed -i.bak 's|ifndef __GNUC__|ifndef __NOTREALLYGNUC__|g'        tmpdir/binutils/include/libiberty.h
+  sed -i.bak 's|extern int sys_nerr;|extern const int sys_nerr;|g' tmpdir/binutils/libiberty/strerror.c
+# Patch Phase: (fix Puma linking in configure on Yosemite)
+  sed -i.bak 's|10\.\[012\]\*|10.[012][,.]*|g' */configure
+<<
+
+CompileScript: <<
+#!/bin/sh -ev
+  cd tmpdir/binutils
+  CFLAGS="-m32 -O2 -U_FORTIFY_SOURCE -I%p/include" CC=/usr/bin/gcc ./configall
+#   INSTALL_PROGRAM_ARGS=%d ./configall
+#   --prefix=%p/lib/powerpc-Morphos \
+#  --bindir=%p/bin --mandir=%p/share/man --infodir=%p/share/info \
+#  --program-prefix=powerpc-morphos-                 \
+#  --disable-werror
+
+  cd build
+  make -j 1 CFLAGS="-m32 -O2 -U_FORTIFY_SOURCE -fno-builtin -I%p/include" CC=/usr/bin/gcc
+<<
+
+InstallScript: <<
+#!/bin/sh -ev
+  cd tmpdir/binutils/build
+  make install 
+#  MAKEDIRS=%d DESTDIR=%d bindir=%d/bin mandir=%d/share/man infodir=%d/share/info includedir=%d/include
+#  rm -fr %i/lib/powerpc-morphos/lib/
+#  rm -fr %i/share/info
+<<
+
+#DocFiles: README COPYING* MAINTAINERS
+
+DescPort: <<
+- use of a .xz source archive requires declaring a BuildDepends or Depends on:
+  fink (>= 0.32)
+- "2> /dev/null" in libiberty/Makefile requires bash
+
+Like 'avr-binutils' package, lib & include folders have been moved to 
+/sw/lib/powerpc-morphos and the binaries are put into /sw/bin.
+All xxx.info files are removed to avoid clashes with other potential
+toolchains.
+<<
+
+Homepage: http://www.gnu.org/software/binutils/
+
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

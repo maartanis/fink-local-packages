@@ -1,0 +1,75 @@
+Info2: <<
+Package: heatwizard-%type_pkg[uitype]
+Type: uitype (cli gui)
+Version: 0.3.2
+Revision: 3
+Description: Thermocouple to temperature converter
+BuildDepends: fpc, (%type_pkg[uitype] = gui) lazarus-aqua | lazarus-lcl-carbon
+License: GPL
+
+# Unpack Phase:
+Source: mirror:sourceforge:heatwizard/%v/HeatWizard-%v.tar.bz2
+Source-MD5: 1aba650305778b35a3ee165b76fd6bbe
+SourceDirectory: .
+
+# Compile Phase (NOTE: there is no configure):
+CompileScript: <<
+#!/bin/sh -ev
+
+# Yosemite fix
+  if [ "$(uname -r | cut -d. -f1)" -ge 14 ]; then export MACOSX_DEPLOYMENT_TARGET=10.9 ; fi
+
+  if   [ %m == "x86_64" ]; then
+    sed -i.bak 's|LAZARUS_OPTIONS)|LAZARUS_OPTIONS) --compiler=%p/bin/ppc386|g' Makefile
+  fi
+  make %type_raw[uitype]
+  if [ "%type_raw[uitype]" == "gui" ]; then
+    make macosx-app
+  fi
+<<
+
+# Install Phase:
+InstallScript: <<
+#!/bin/sh -ev
+  if   [ "%type_raw[uitype]" == "cli" ]; then
+    install -d                  %i/bin
+    install -m 755 heatwizard   %i/bin
+    install -d                  %i/share/man/man1
+    install -m 644 heatwizard.1 %i/share/man/man1
+  else 
+    install -d           %i/Applications
+    mv 'Heat Wizard.app' %i/Applications/
+  fi
+<<
+
+PostInstScript: <<
+  if [ "%type_raw[uitype]" == "gui" ]; then
+    if ! test -e /Applications/Fink; then
+      install -d -m 755 /Applications/Fink
+    fi
+    ln -s '%p/Applications/Heat Wizard.app' /Applications/Fink/
+  fi
+<<
+
+PostRmScript: <<
+  if [ "%type_raw[uitype]" == "gui" ]; then
+    rm -f '/Applications/Fink/Heat Wizard.app'
+  fi
+<<
+
+DocFiles: COPYING GPL* README
+
+DescDetail: <<
+Heat Wizard converts the voltage of a thermocouple to the 
+corresponding temperature and vice versa. The conversion takes 
+into account the temperature of a reference thermocouple.
+<<
+
+DescUsage: <<
+For hints about the command line tool type heatwizard or read its man page.
+Start the GUI program by a double click on the icon in /Applications/Fink
+<<
+
+Homepage: http://heatwizard.sourforge.net/
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>
+<<

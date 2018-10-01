@@ -1,0 +1,46 @@
+Info3: <<
+Package: cycler-py%type_pkg[python]
+Version: 0.10.0
+Revision: 1
+Maintainer: Derek Homeier <dhomeie@gwdg.de>
+Type: python (2.7 3.4 3.5 3.6 3.7)
+Depends: python%type_pkg[python], six-py%type_pkg[python]
+BuildDepends: setuptools-tng-py%type_pkg[python]
+Source: https://files.pythonhosted.org/packages/source/C/Cycler/cycler-%v.tar.gz
+Source-MD5: 4cb42917ac5007d1cdff6cccfe2d016b
+CompileScript: <<
+ %p/bin/python%type_raw[python] setup.py build
+<<
+InstallScript: <<
+ %p/bin/python%type_raw[python] setup.py install --root %d
+<<
+InfoTest: <<
+ TestDepends: nose-py%type_pkg[python]
+ TestScript: <<
+  #!/bin/bash -ev
+  export PYTHONPATH=$(ls -d %b/build/lib)
+  cd ..
+  # %p/bin/python%type_raw[python] -B run_tests.py
+  exit $?
+ <<
+ TestSuiteSize: small
+<<
+
+DocFiles: README.rst
+Description: Composable cycles (kwarg iterator)
+
+DescDetail: <<
+When using matplotlib and plotting more than one line, it is common
+to want to be able to cycle over one or more artist styles; but the
+plotting logic can quickly become very involved.
+To address this and allow easy cycling over arbitrary 'kwargs' the
+`Cycler` class, a composable kwarg iterator, was developed.
+<<
+
+DescPackaging: <<
+Test suite only implemented on github master.
+<<
+License: BSD
+Homepage: https://github.com/matplotlib/cycler
+# Info3
+<<

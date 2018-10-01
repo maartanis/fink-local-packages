@@ -1,0 +1,67 @@
+Package: ultrastardx
+Version: 1.1-final
+Revision: 1
+License: GPL
+
+BuildDepends: <<
+fpc (>= 2.4.0), fpc-config,
+libtheora0, libogg, libvorbis0,
+libavcodec53-dev, libavformat53-dev, libavutil51-dev, libswscale2-dev,
+sdl, sdl-image,
+libpng16, portaudio2,
+sqlite3, sqlite3-dev,
+freetype219,
+lua52, lua52-dev,
+pcre
+<<
+
+Depends: <<
+libavcodec53-shlibs, libavformat53-shlibs, libavutil51-shlibs, libswscale2-shlibs,
+sdl-shlibs, sdl-image-shlibs,
+libpng16-shlibs, portaudio2-shlibs,
+sqlite3-shlibs,
+freetype219-shlibs,
+lua52-shlibs,
+pcre-shlibs
+<<
+
+Source: http://downloads.sourceforge.net/project/ultrastardx/UltraStar%%20Deluxe/Version%%201.1%%20final/Sources/%n-1.1-src.tar.gz
+Source-MD5: fa4128c9527b06408614c39e93a23bbc
+
+SourceDirectory: %n-1.1-src
+
+CompileScript: <<
+./configure
+
+# Yosemite fix
+  if [ "$(uname -r | cut -d. -f1)" -ge 14 ]; then export MACOSX_DEPLOYMENT_TARGET=10.9 ; fi
+
+make macosx-app
+<<
+
+InstallScript: echo "nothing to install."
+
+AppBundles: UltraStarDeluxe.app
+
+DocFiles: AUTHORS.txt COPYING.txt COPYRIGHT.txt ReadMe.txt ChangeLog.txt
+
+Description: Singing game
+
+DescDetail: <<
+UltraStar Deluxe is a singing game.
+
+There are some free songs from the UltrastarDeluxe web page.
+
+Download them from the wikipage:
+
+http://ultrastardeluxe.xtremeweb-hosting.net/wiki/doku.php/doku.php?id=songs
+
+and add them to this folder in your home directory:
+
+~/Music/UltraStar Deluxe/songs
+
+Please, see the web site http://ultrastardx.sourceforge.com/ for further help.
+<<
+
+Homepage: http://ultrastardx.sourceforge.com/
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

@@ -1,0 +1,117 @@
+Package: epics-base
+Version: 3.16.1
+Revision: 1
+Description: Expt. phys. and industrial control system
+License: BSD
+
+# Dependencies:
+Depends: %N3-shlibs (= %v-%r)
+BuildDepends: readline7
+
+# Unpack Phase:
+Source: http://aps.anl.gov/epics/download/base/base-%v.tar.gz
+Source-MD5: c5f461e88c2e2f4c27ac9ef828c6fb9d
+
+# Patch Phase:
+PatchScript: <<
+  #!/bin/sh -ev
+# reported upstream as https://bugs.launchpad.net/epics-base/+bug/1792695
+  sed -i.bak 's|\-flat_namespace\ \-undefined\ suppress|\-undefined\ dynamic_lookup|g' configure/os/CONFIG.darwinCommon.darwinCommon
+<<
+
+# Compile Phase:
+CompileScript: <<
+  #!/bin/sh -ev
+  EPICS_HOST_ARCH=darwin-x86
+  make
+<<
+
+InstallScript: <<
+#!/bin/sh -ev
+# programs
+  mkdir -p %i/bin
+  install -m 755 %b/bin/darwin-x86/* %i/bin
+
+# include and other developer files
+  mkdir -p %i/include
+  mkdir -p %i/include/os/Darwin
+  mkdir -p %i/include/compiler/clang
+  install -m 755 %b/include/*.h %i/include
+  mkdir -p %i/share/epics-base
+  mv %b/templates %i/share/epics-base
+
+# libraries
+  mkdir -p %i/lib
+  install -m 755 %b/lib/darwin-x86/lib*3.16.1.dylib %i/lib
+  rm -f %b/lib/darwin-x86/lib*3.16.1.dylib
+  mv %b/lib/darwin-x86/lib*.dylib %i/lib
+  install -m 755 %b/lib/darwin-x86/lib*.a %i/lib
+
+  mkdir -p %i/lib/pkgconfig
+  cd %b/lib/pkgconfig
+  sed -i.bak 's|%b|%p|g'        epics-base-darwin-x86.pc epics-base.pc
+  sed -i.bak 's|/darwin-x86||g' epics-base-darwin-x86.pc epics-base.pc
+  install -m 755 *.pc %i/lib/pkgconfig
+ 
+### fix install_names not to use %i
+  cd %i/lib
+  for LIB_NAME in libca libcas libCom libdbCore libdbRecStd libgdd ; do
+    install_name_tool -id                                   %p/lib/$LIB_NAME.3.16.1.dylib $LIB_NAME.3.16.1.dylib
+    install_name_tool -change %i/lib/$LIB_NAME.3.16.1.dylib %p/lib/$LIB_NAME.3.16.1.dylib $LIB_NAME.3.16.1.dylib
+  done 
+<<
+
+# Install Phase:
+DocFiles: LICENSE README documentation
+
+SplitOff: <<
+  Package: %N3-shlibs
+  Depends: readline7-shlibs
+  Files: <<
+    lib/libca.3.16.1.dylib
+    lib/libcas.3.16.1.dylib
+    lib/libCom.3.16.1.dylib
+    lib/libdbCore.3.16.1.dylib
+    lib/libdbRecStd.3.16.1.dylib
+    lib/libgdd.3.16.1.dylib
+  <<
+  Shlibs: <<
+    %p/lib/libca.3.16.1.dylib       3.16.1 %n (>= 3.16.1-1)
+    %p/lib/libcas.3.16.1.dylib      3.16.1 %n (>= 3.16.1-1)
+    %p/lib/libCom.3.16.1.dylib      3.16.1 %n (>= 3.16.1-1)
+    %p/lib/libdbCore.3.16.1.dylib   3.16.1 %n (>= 3.16.1-1)
+    %p/lib/libdbRecStd.3.16.1.dylib 3.16.1 %n (>= 3.16.1-1)
+    %p/lib/libgdd.3.16.1.dylib      3.16.1 %n (>= 3.16.1-1)
+  <<
+  DocFiles: LICENSE README documentation
+<<
+
+Splitoff2: <<
+  Package: %N3-dev
+  Depends: %N3-shlibs (>= %v-1)
+  BuildDependsOnly: true
+  Files: <<
+    include
+    lib/libca.dylib
+    lib/libcas.dylib
+    lib/libCom.dylib
+    lib/libdbCore.dylib
+    lib/libdbRecStd.dylib
+    lib/libgdd.dylib
+    lib/lib*.a
+    lib/pkgconfig
+    share/epics-base/templates
+  <<
+  DocFiles: LICENSE README documentation
+<<
+
+# Additional Info
+DescDetail: <<
+EPICS is a set of Open Source software tools, libraries and applications
+developed collaboratively and used worldwide to create distributed soft
+real-time control systems for scientific instruments such as a particle
+accelerators, telescopes and other large scientific experiments.
+<<
+
+Homepage: http://www.aps.anl.gov/epics/index.php
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

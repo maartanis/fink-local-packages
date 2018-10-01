@@ -1,0 +1,47 @@
+Package:  vasm
+Version:  1.7a
+Revision: 1
+Description: Assembler for objects in various formats
+License:     OSI-Approved
+
+# Unpack Phase:
+Source: http://sun.hasenbraten.de/vasm/release/%n.tar.gz
+Source-MD5: cd6db69aad0d5a0c638d4b214c57ea22
+
+# Compile Phase (NOTE: there is no configure):
+CompileScript: <<
+#!/bin/sh -ev
+  make CPU=m68k SYNTAX=std
+<<
+
+# Install Phase:
+DocFiles: history
+
+InstallScript: <<
+#!/bin/sh -ev
+  mkdir -p %i/bin
+  install -m 755 %b/vasmm68k_std %i/bin
+  install -m 755 %b/vobjdump %i/bin
+  strip %i/bin/*
+  ln -s vasmm68k_std %i/bin/vasm
+  ln -s vasmm68k_std %i/bin/m68k-amiga-as
+<<
+
+DescDetail: <<
+vasm is a portable and retargetable assembler to create 
+linkable objects in various formats or absolute code. 
+Multiple CPU-, syntax and output-modules can be selected.
+<<
+
+DescUsage: <<
+vasm is run using the following syntax:
+
+      vasmm68k_std [options] file
+<<
+
+DescPort: <<
+  Nothing so far
+<<
+
+Homepage: http://sun.hasenbraten.de/vasm
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

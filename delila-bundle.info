@@ -1,0 +1,123 @@
+Package: delila-bundle
+Version: 6
+Revision: 1
+License: GPL
+
+BuildDepends: fpc (>= 3.0.4.1)
+
+Source: mirror:sourceforge:fink/delila-2018-04-16.tar.bz2
+Source-MD5: 1b04e2edd068758e7a47a997d2a3b40d
+
+SourceDirectory: delila
+
+PatchScript: <<
+#!/bin/sh -ev
+  sed -i.bak 's|parsedwordindex: integer;|parsedwordindex, parsedlength: integer;|g' delila.p
+<<
+
+CompileScript: <<
+#!/bin/sh -ev
+  mkdir build
+
+  fpc -ap -v0 extpas.pp
+
+  namelist="alist alpro alword aran asciicode asciidna auxmod av between    \
+  bigbuf biglet binom binomial binplo bk2seq bkdb bndrec bookends bookshift \
+  calc calhnb calico cap capsmark censor center cerf chacha chaos chi cisq  \
+  ckhelix clual cluster cnsr coda codecomments column comp compan concat    \
+  consensus coscurve count counter csv2ssv cumulative curvafea cutoff da3d  \
+  da3drotate dalvec dangles dashseq datarange dbclean dbfilter dbinst dblo  \
+  dbmutate decat decimals decom dedup dehtml delinst dem denav denplo denri \
+  derivative derive despace diana diffinst diffint diffintcut difri         \
+  diffribl digrab dirgra diri dirty disum dnag dnamwt domod doodle dops     \
+  dotmat dotsba doudiff embed emin emptytest encfrq encode encsum epsclean  \
+  evd evenco exon expgraph exponential exponentmax fastcat fdr fealoc fico  \
+  fileposition fitgauss fl flag flag78 floc frag frame frese fv gap gauss   \
+  gaussint gedo genhis genmod genpic gentst gifnormalize hc helix helixside \
+  helloworld hgraph hist histan htmlink httplink ic imgalt indana index     \
+  instal kenin keymat lenin lidel lig linreg live ll localbest lochas log   \
+  logav logscale loocat makegauss makeinst makelogo makman makmod maknam    \
+  malign malin malopt matmod matrix memory merge mergemarks meri mfoldfea   \
+  mfoldseq migrate mkdb mkdis mnomial modin modlen module mstrip multtest   \
+  mutseq noblank nocom nocomequal nohigh nohob nomultiblank normal normreg  \
+  notex number numdate odti omp ordcut orf palinf parse parseform patana    \
+  patlst patser patval pbreak pcs pemowe piechart pizza pnmnormalize power  \
+  prgmod protecthtml pst quoteline range rara rav rb rean ref2bib refer     \
+  reffea reform rembla rep repro rf riden rila ring rnclean round roundfile \
+  rsconv rseq rsgra rv same scale sebo sepa shell short shortline show      \
+  shrink sites smoothis sortbibtex sorth spec sphere split spray sqz        \
+  ssbread stirling subfeatures subsymvec sumfile surprisal swt tabify test  \
+  thethepc titer tkod tobinary tod todawg todobfcite tram transpose trex    \
+  truncround tstrnd ttest twogau uncsv undel unnumber unsqz untex untitle   \
+  unverb ver verbop vernam vernum versave vr waveplot whatch whole winfo    \
+  winrs winscan wl woco worcha worcharev wordlist wtch wtco ww wwfmt wwlow  \
+  xyda xyplo yes zipf"
+  
+  for filename in $namelist
+  do
+    fpc -Miso -ap -v0 -FEbuild $filename.p > /dev/null
+  done
+
+# optimized versions
+  fpc -OWall -Miso -CX -XX -FWmalign.wpo -ap -v0 -FEbuild malign.p
+  fpc -Owall -Miso -CX -XX -Fwmalign.wpo -ap -v0 -FEbuild malign.p
+  strip build/malign
+
+  fpc -OWall -Miso -CX -XX -FWencode.wpo -ap -v0 -FEbuild encode.p
+  fpc -Owall -Miso -CX -XX -Fwencode.wpo -ap -v0 -FEbuild encode.p
+  strip build/encode
+
+# using extended Pascal 
+
+  namelist="catal dbbk dbcat dbpull delmod delila dnaplot ev freb       \
+    instshift lister makebk makewalker markov medlinebib multiscan      \
+    oligosetc patlrn rawbk ri ridi rndseq rsim rwbk scan search setdate \
+    siva timenul timefpc"
+
+  for filename in $namelist
+  do
+    fpc -Miso -ap -v0 -FEbuild -Faextpas $filename.p
+  done
+
+# optimized version
+  fpc -OWall -Miso -CX -XX -FWdelila.wpo -ap -v0 -FEbuild -Faextpas delila.p
+  fpc -Owall -Miso -CX -XX -Fwdelila.wpo -ap -v0 -FEbuild -Faextpas delila.p
+  strip build/delila
+
+<<
+
+InstallScript: <<
+#!/bin/sh -ev
+  mkdir -p %i/bin/
+  cd build
+  rm *.o
+  mv cluster cluster-delila
+  mv transpose transpose-delila
+  install -c -m 755 * %i/bin/
+<<
+
+Description: Analysis of Protein & Nucleic-acid Sequences
+
+DescDetail: <<
+  Delila programs were designed to manipulate sets of sequence fragments.
+  Some of the programs are used to create sequence logos and sequence
+  walkers while others are tools that I find useful such as rembla and the
+  TheThe program.
+<<
+
+DescPort: <<
+  not included (not needed)
+  timegpc timep2c timesun 
+
+  not included (compile error); outdated, will not be fixed.
+  dosun.p(69,1) Error: Illegal char constant
+  dosun.p(69,1) Fatal: Syntax error, "BEGIN" expected but "const string" found
+  include files for suncore graphic for direct screen output.
+
+  Some programs use TimeStamp, GetTimeStamp, date and time. As soon as fpc
+  supports extended Pascal extpas.pp and withDate.inc can be removed and
+  the code and CompileScript can be simplified.
+<<
+
+Homepage: https://schneider.ncifcrf.gov/delila.html
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

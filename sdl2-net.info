@@ -1,0 +1,40 @@
+Package: sdl2-net
+Version: 2.0.1
+Revision: 1
+Maintainer: Max Horn <max@quendi.de>
+BuildDepends: <<
+  fink-package-precedence,
+  sdl2
+<<
+Depends: %N-shlibs (= %v-%r)
+BuildDependsOnly: True
+Source: http://www.libsdl.org/projects/SDL_net/release/SDL2_net-%v.tar.gz
+Source-MD5: 5c1d9d1cfa63301b141cb5c0de2ea7c4
+ConfigureParams: <<
+ --disable-sdltest \
+ --disable-gui     \
+ --enable-dependency-tracking
+<<
+CompileScript: <<
+  ./configure %c
+  make
+  fink-package-precedence .
+<<
+InstallScript: make install DESTDIR=%d
+SplitOff: <<
+  Package: %N-shlibs
+  Depends: <<
+    sdl2-shlibs (>= 2.0.1-1)
+  <<
+  Replaces: %N
+  Files: lib/libSDL2_net-*.dylib
+  Shlibs: %p/lib/libSDL2_net-2.0.0.dylib 1.0.0 %n (>= 2.0.1-1)
+  Docfiles: CHANGES.txt COPYING.txt README.txt
+<<
+Docfiles: CHANGES.txt COPYING.txt README.txt
+Description: SDL net file loading library
+DescPackaging: <<
+ Use --disable-sdltest to allow building on headless systems.
+<<
+Homepage: https://www.libsdl.org/projects/SDL_net/
+License: OSI-Approved

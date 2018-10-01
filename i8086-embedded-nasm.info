@@ -1,0 +1,21 @@
+Package:  i8086-embedded-nasm
+Type: nosource
+Version:  2.11.02
+Revision: 1
+Description:  Nasm: Cross-assembler for i8086-embedded
+Depends:      nasm
+License:      BSD
+
+# Compile Phase (NOTE: there is no configure):
+CompileScript: <<
+<<
+
+# Install Phase:
+InstallScript: <<
+#!/bin/sh -ev
+  mkdir -p %i/bin
+  cd %i/bin
+  ln %p/bin/nasm i8086-embedded-nasm
+<<
+
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

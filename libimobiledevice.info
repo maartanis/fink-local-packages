@@ -1,0 +1,73 @@
+Package: libimobiledevice
+Version: 1.1.7
+Revision: 3
+Description: Library to talk to iDevices
+License: LGPL
+
+# Dependencies:
+BuildDependsOnly: true
+Depends: %n5-shlibs (>= %v-1)
+BuildDepends: fink-package-precedence, pkgconfig, libusbmuxd4-dev, libplist3, libgcrypt, openssl100-dev, libxml2 (>= 2.6.32-1)
+
+# Unpack Phase:
+Source: http://www.libimobiledevice.org/downloads/%n-%v.tar.bz2
+Source-MD5: 5649da76965c1d2c250e52c4e743ef71
+
+ConfigureParams: LDFLAGS="-L%p/lib" CFLAGS="-I%p/include -std=gnu89" --without-cython
+
+# Patch Phase: (fix Puma linking in configure on Yosemite)
+PatchScript: <<
+#!/bin/sh -ev
+  sed -i.bak 's|10\.\[012\]\*|10.[012][,.]*|g' configure
+<<
+
+CompileScript: <<
+  ./configure %c
+  make CFLAGS='-Wno-deprecated-declarations'
+  fink-package-precedence .
+<<
+
+DocFiles: AUTHORS COPYING* NEWS README
+
+SplitOff: <<
+  Package: %n5-shlibs
+  Depends: libusbmuxd4-shlibs, libplist3-shlibs, openssl100-shlibs
+
+  Files: <<
+    lib/libimobiledevice.5.dylib
+  <<
+  Shlibs: <<
+    %p/lib/libimobiledevice.5.dylib 6.0.0 %n (>= 1.1.5-1)
+  <<
+  DocFiles: AUTHORS COPYING* NEWS README
+<<
+
+Splitoff2: <<
+  Package: %n5-dev
+  Conflicts: %n-dev, %n5-dev
+  Replaces:  %n-dev, %n5-dev
+  Depends: libimobiledevice5-shlibs (>= %v-1)
+  BuildDependsOnly: true
+  Files: <<
+    include
+    lib
+  <<
+  DocFiles: AUTHORS COPYING* NEWS README docs/html
+<<
+
+# Additional Info
+DescDetail: <<
+libimobiledevice is a software library that talks the protocols to support
+iPhone, iPod Touch, iPad and Apple TV devices.  Unlike other projects, it
+does not depend on using any existing proprietary libraries and does not
+require jailbreaking.  It allows other software to easily access the
+device's filesystem, retrieve information about the device and it's
+internals, backup/restore the device, manage SpringBoard icons, manage
+installed applications, retrieve addressbook/calendars/notes and bookmarks
+and synchronize music and video to the device.
+
+See the README file for some commandline tools to access iDevices.
+<<
+
+Homepage: http://www.libimobiledevice.org/
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

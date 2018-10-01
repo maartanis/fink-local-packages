@@ -1,0 +1,98 @@
+Package: lazarus-lcl-customdrawn
+Version: 1.8.4
+Revision: 1
+License: GPL/LGPL
+
+Depends: <<
+  lazarus-aqua (>= 1.8) | lazarus-gtk2 (>= 1.8) | lazarus-qt4 (>= 1.8) | 
+  lazarus-qt5 (>= 1.8),
+  fpc (>= 3.0.4)
+<<
+
+Recommends: fpc-doc, lazarus-doc
+
+Source: mirror:sourceforge:lazarus/lazarus-%v.tar.gz
+Source-MD5: 57aee3f53202f069fbbf4304fd810990
+
+SourceDirectory: lazarus
+
+UseMaxBuildJobs: false
+
+Patchscript: <<
+#!/bin/sh -ev
+
+  chmod 755 .
+
+# fix compilation of bigidecomponents with LCL_PLATFORM=customdrawn (LCLcustomdrawn)
+# with osprinters.pas the line number needs to be given
+  sed -i.tmp '46 s|LCLGtk2|LCLcustomdrawn}{$I cupsprinters_h.inc}{$ENDIF}{$IFDEF LCLGtk2|g' components/printers/osprinters.pas
+  sed -i.tmp '83 s|LCLGtk2|LCLcustomdrawn}{$I cupsprinters.inc}{$ENDIF}{$IFDEF LCLGtk2|g' components/printers/osprinters.pas
+  sed -i.tmp 's|LCLGtk2|LCLcustomdrawn}uses udlgSelectPrinter, udlgPropertiesPrinter, udlgPageSetup;{$I cupsprndialogs.inc}{$ENDIF}{$IFDEF LCLGtk2|g' components/printers/printersdlgs.pp
+<<
+
+CompileScript: <<
+#!/bin/sh -ev
+# create the file lazarus/lcl/interfaces/customdrawn/Makefile.compiled
+# Lazarus 1.2 may not need this any longer
+#cat >%b/lcl/interfaces/customdrawn/Makefile.compiled <<EOFXML
+#<?xml version="1.0"?>
+#<CONFIG>
+#  <Makefile Value="True"/>
+#  <Params Value=" -MObjFPC -Scghi -O1 -g -gl -vewnhi -l -Fucustomdrawn;../units/%%(CPU_TARGET)-%%(OS_TARGET);../../components/lazutils/lib/%%(CPU_TARGET)-%%(OS_TARGET);../../packager/units/%%(CPU_TARGET)-%%(OS_TARGET);.-Ficustomdrawn lcl.pas"/>
+#</CONFIG>
+#EOFXML
+
+# Yosemite fix
+  if [ "$(uname -r | cut -d. -f1)" -ge 14 ]; then export MACOSX_DEPLOYMENT_TARGET=10.9 ; fi
+
+  debug_options="-gl"
+
+# ** Start compiling the lazarus component libraries
+
+  AllUnits="registration lazutils codetools lcl basecomponents bigidecomponents"
+
+  make $AllUnits LCL_PLATFORM=customdrawn OPT="$debug_options"
+<<
+
+InstallScript: <<
+#!/bin/sh -ev
+# ** install the lcl and other libraries/units **
+
+  for path in $(find . -name customdrawn | cut -f 2- -d '/' | grep %m-darwin) ; do
+    install -d  $(echo %i/share/lazarus/$(dirname $path))
+    mv -v $path $(echo %i/share/lazarus/$(dirname $path))
+  done
+
+  chmod -R a+rw %i/share/lazarus
+
+<<
+
+Description: The customdrawn version of the lcl
+
+DescUsage: This is the customdrawn version of the lazarus component library
+
+DescPort: <<
+  Compiles and installs for 32-bit.
+
+  Does not compile on 64bit, because there are still references to the carbon library
+  for example ATSUGetUnjustifiedBounds:
+
+Compiling cocoagdiobjects.pas
+cocoagdiobjects.pas(442,27) Error: Identifier not found
+"ATSUGetUnjustifiedBounds"
+cocoagdiobjects.pas(449,23) Error: Identifier not found
+"ATSUCreateTextLayout"
+cocoagdiobjects.pas(477,25) Error: Identifier not found
+"ATSUFindFontFromName"
+cocoagdiobjects.pas(556,29) Error: Identifier not found
+"ATSUSetTextPointerLocation"
+
+  Notes regarding the InstallScript:
+  - find gives the list of directories
+  - cut removes the './' from the beginning of the paths
+  - grep removes the directories, which do not contain unit files 
+<<
+
+Homepage: http://wiki.freepascal.org/Main_Page
+
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

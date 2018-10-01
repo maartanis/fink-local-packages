@@ -1,0 +1,88 @@
+Package: m68k-amigaos-binutils
+Version: 2.14
+Revision: 1
+Description: GNU binutils for m68k-amigaos
+License: LGPL
+
+Source: https://github.com/cahirwpz/m68k-amigaos-toolchain/archive/master.zip
+Source-MD5: 499680b8516cccfd6b6936775c119d68
+Source2: mirror:gnu:binutils/binutils-%v.tar.gz
+Source2-MD5: ba665d0ddcc88313384b79e293ecbbab
+# 2.9 Source-MD5: 1ea2156826718eb182843f036c04b0fc
+
+#Source: mirror:gnu:binutils/binutils-%v.tar.bz2
+#2.26 Source-MD5: 64146a0faa3b411ba774f47d41de239f
+
+SourceDirectory: m68k-amigaos-toolchain-master
+
+BuildDepends: texinfo-legacy
+
+Conflicts: texinfo, texi2html, texlive, texlive-nox
+Replaces:  texinfo, texi2html, texlive, texlive-nox
+
+Patchscript: <<
+#!/bin/sh -ev
+  mkdir sources
+  mkdir build
+  mv ../binutils-%v sources
+  readonly TOP_DIR="$(pwd)"
+  readonly PATCHES="${TOP_DIR}/patches"
+  readonly SOURCES="${TOP_DIR}/sources"
+
+function copy_non_diff {
+  find "${PATCHES}/$1" -type f \! -name '*.diff' | while read IN ; do
+    OUT=$(echo "$IN" | sed -e "s,$PATCHES/,$SOURCES/,g")
+    cp "$IN" "$OUT"
+  done
+}
+
+function apply_patches {
+  for file in $(find "${PATCHES}/$1" -type f -iname '*.diff' | sort); do
+    patch -i $file -t -p1
+  done
+}
+
+  cd sources/binutils-%v
+  copy_non_diff binutils-%v
+  apply_patches binutils-%v
+
+# Patch Phase: (fix Puma linking in configure on Yosemite)
+  sed -i.bak 's|10\.\[012\]\*|10.[012][,.]*|g' */configure
+<<
+
+ConfigureParams: <<
+  --target=m68k-amigaos                           \
+  --prefix=%p/lib/m68k-amigaos                    \
+  --bindir=%p/bin --mandir=%p/share/man --infodir=%p/share/info \
+  --program-prefix=m68k-amigaos-                  \
+  --disable-werror --disable-nls
+<<
+
+CompileScript: <<
+#!/bin/sh -ev
+  cd build
+  ../sources/binutils-%v/configure %c
+  num_cpu=$(echo `sysctl -n hw.ncpu`)
+  make -j $num_cpu
+<<
+
+InstallScript: <<
+#!/bin/sh -ev
+  cd build
+  make install DESTDIR=%d
+  rm -fr %i/lib/m68k-amigaos/lib/
+  rm -fr %i/share/info
+<<
+
+DocFiles: sources/binutils-%v/README sources/binutils-%v/COPYING*
+
+DescPort: <<
+Like 'avr-binutils' package, lib & include folders have been moved to 
+/sw/lib/m68k-amigaos and the binaries are put into /sw/bin.
+All xxx.info files are removed to avoid clashes with other potential
+toolchains.
+<<
+
+Homepage: http://www.gnu.org/software/binutils/
+
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

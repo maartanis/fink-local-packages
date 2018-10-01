@@ -1,0 +1,74 @@
+Package: isaacs
+Version: 2.8
+Revision: 1
+Description: Interactive Chemical Structure Analysis
+License: GPL
+
+# Unpack Phase:
+Source: mirror:sourceforge:%n/%n-%v.tar.bz2
+Source-MD5: e9d1b8a56e7f0e0ac1d1a8f4af4e1ad9
+
+BuildDepends: <<
+  fink-package-precedence,
+  atk1,
+  cairo,
+  glib2-dev,
+  gtk+2-dev,
+  libxml2,
+  pango1-xft2-ft219-dev
+<<
+Depends: <<
+  atk1-shlibs,
+  cairo-shlibs,
+  glib2-shlibs,
+  gtk+2-shlibs,
+  libxml2-shlibs,
+  pango1-xft2-ft219-shlibs
+<<
+
+# Patch Phase:
+PatchScript: <<
+#!/bin/sh -ev
+# fix unknown ld option
+  sed -i.bak 's|-Wl,--export-dynamic||g' src/Makefile.in
+# fix /etc directory
+  sed -i.bak 's|sysconfdir = /etc|sysconfdir = %p/etc|g' Makefile.in
+# fix bash_completion.d/isaacs directory
+  sed -i.bak 's|bash_completion.d;|bash_completion.d/isaacs;|g' Makefile.in
+<<
+
+# Compile Phase:
+CompileScript: <<
+#!/bin/sh -ev
+  ./configure %c \
+  GTK_CFLAGS='-I%p/include/atk-1.0 -I%p/include/cairo                   \
+  -I%p/include/glib-2.0 -I%p/lib/glib-2.0/include -I%p/include/gtk-2.0  \
+  -I%p/lib/gtk-2.0/include -I%p/include/libxml2 -I%p/include/pango-1.0' \
+  GTK_LIBS='-latk-1.0 -lcairo -lgdk-x11-2.0 -lgdk_pixbuf-2.0 -lgio-2.0  \
+  -lglib-2.0 -lgobject-2.0 -lgtk-x11-2.0 -lpango-1.0 -lxml2' 
+  make -j 1
+#  fink-package-precedence --prohibit-bdep=%n0-dev .
+<<
+
+# Install Phase:
+DocFiles: AUTHORS ChangeLog COPYING INSTALL NEWS README
+
+InstallScript: <<
+#!/bin/sh -ev
+  %{default_script}
+<<
+
+# Additional Info
+DescDetail: <<
+Several structrural characteristics may be computed by I.S.A.A.C.S.
+inclusing radial distribution functions, atomic coordination numbers, model
+free volume and density, bond angle distributions, rings statistics,
+spherical harmonic invariants and bond valence sums.  The program is run
+via a graphical interface allowing the user to input data in an intuitive
+way and easily visualize/save the computed characteristics.
+<<
+
+DescPort: Fortran compilation needs -j 1
+
+Homepage: http://isaacs.sourceforge.net/index.html
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

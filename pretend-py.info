@@ -1,0 +1,24 @@
+# -*- coding: ascii; tab-width: 4 -*-
+Info2: <<
+Package: pretend-py%type_pkg[python]
+Version: 1.0.9
+Revision: 1
+Type: python (2.7 3.4 3.5 3.6 3.7)
+
+Description: Library for stubbing in Python
+Maintainer: Daniel Johnson <daniel@daniel-johnson.org>
+License: BSD
+Homepage: http://pypi.python.org/pypi/pretend
+
+Source: https://files.pythonhosted.org/packages/source/p/pretend/pretend-%v.tar.gz
+Source-MD5: ad53883ede48aeac7ae584f0de0240e8
+
+Depends: python%type_pkg[python]
+BuildDepends: fink (>= 0.24.12), setuptools-tng-py%type_pkg[python]
+
+CompileScript: %p/bin/python%type_raw[python] setup.py build
+
+InstallScript: %p/bin/python%type_raw[python] setup.py install --root=%d
+
+DocFiles: LICENSE.rst README.rst
+<<

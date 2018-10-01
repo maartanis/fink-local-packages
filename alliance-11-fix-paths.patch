@@ -1,0 +1,32 @@
+--- alliance-5.1.1.orig/distrib/etc/alc_env.sh.in
++++ alliance-5.1.1/distrib/etc/alc_env.sh.in
+@@ -21,7 +21,7 @@
+ 
+ # Where the Alliance CAD is installed
+         ALLIANCE_TOP=@prefix@;                       export ALLIANCE_TOP
+-         SYSCONF_TOP=$ALLIANCE_TOP/etc
++         SYSCONF_TOP=/etc/alliance
+            CELLS_TOP=$ALLIANCE_TOP/cells
+  if [ "$ALLIANCE_TOP" = "/usr/lib/alliance" ]; then
+   # FHS Installation.
+--- alliance-5.1.1.orig/distrib/etc/alc_env.csh.in
++++ alliance-5.1.1/distrib/etc/alc_env.csh.in
+@@ -21,7 +21,7 @@
+ 
+ # Where the Alliance CAD is installed
+  setenv ALLIANCE_TOP         "@prefix@"
+- set    SYSCONF_TOP          "${ALLIANCE_TOP}/etc"
++ set    SYSCONF_TOP          "/etc/alliance"
+  set    CELLS_TOP            "${ALLIANCE_TOP}/cells"
+  if ( "${ALLIANCE_TOP}" == "/usr/lib/alliance" ) then
+ # For installation in the FHS.
+--- alliance-5.1.1.orig/mbk/etc/Makefile.am
++++ alliance-5.1.1/mbk/etc/Makefile.am
+@@ -1,6 +1,6 @@
+ # $Id: Makefile.am,v 1.4 2002/05/08 21:07:25 jpc Exp $
+ 
+-etcdir=$(prefix)/etc
++etcdir=/etc
+ 
+ etc_DATA=spimodel.cfg
+ 

@@ -1,0 +1,80 @@
+Package: abinit
+Version: 8.6.3
+Revision: 1
+Description: Ab-initio density functional software
+BuildDepends: fink-package-precedence, gcc7-compiler, fftw3, netcdf-fortran7, openmpi
+Depends: gcc7-shlibs, fftw3-shlibs, netcdf-fortran7-shlibs, openmpi-shlibs
+License: OSI-Approved
+
+# Unpack Phase:
+Source: https://www.abinit.org/sites/default/files/packages/%n-%v.tar.gz
+Source-MD5: 6c34d2cec0cf0008dd25b8ec1b6d3ee8
+
+# Patch Phase:
+#PatchFile: %n.patch
+#PatchFile-MD5: 6b742f9e7bc280a52377b828fd885aa6
+
+PatchScript: <<
+#!/bin/sh -ev
+#  sed -i.bak 's|10\.\[012\]\*|10.[012][,.]*|g' */configure
+  %{default_script}
+<<
+
+ConfigureParams: <<
+  --enable-gw-dpc							\
+  --enable-mpi="yes"					\
+  --enable-mpi-io="yes"				\
+  --enable-openmp							\
+  --with-trio-flavor=netcdf		\
+  --with-dft-flavor=bigdft
+<<
+
+GCC: 4.0
+
+# Compile Phase
+CompileScript: <<
+#!/bin/sh -ev
+  ./configure %c
+  make FCFLAGS='-ffree-line-length-none -fopenmp -O3'
+  fink-package-precedence --no-headers .
+<<
+
+# Install Phase:
+InstallScript: <<
+#!/bin/sh -ev
+  %{default_script}
+<<
+
+DocFiles: abinit
+
+InfoTest: <<
+  TestScript: make check || exit 2
+<<
+
+DescDetail: <<
+  ABINIT is a package whose main program allows one to find the total
+  energy, charge density and electronic structure of systems made of
+  electrons and nuclei (molecules and periodic solids) within Density
+  Functional Theory (DFT), using pseudopotentials and a planewave or
+  wavelet basis.  ABINIT also includes options to optimize the geometry
+  according to the DFT forces and stresses, or to perform molecular
+  dynamics simulations using these forces, or to generate dynamical
+  matrices, Born effective charges, and dielectric tensors, based on
+  Density-Functional Perturbation Theory, and many more properties.
+  Excited states can be computed within the Many-Body Perturbation Theory
+  (the GW approximation and the Bethe-Salpeter equation), and
+  Time-Dependent Density Functional Theory (for molecules).  In addition to
+  the main ABINIT code, different utility programs are provided.  ABINIT is
+  a project that favours development and collaboration.
+<<
+
+DescUsage: <<
+  abinit
+<<
+
+DescPort: <<
+  abinit
+<<
+
+Homepage: https://www.abinit.org
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

@@ -1,0 +1,39 @@
+Package: sdl2-ttf
+Version: 2.0.14
+Revision: 1
+Maintainer: Max Horn <max@quendi.de>
+BuildDepends: <<
+  fink-package-precedence,
+  sdl2
+<<
+Depends: %N-shlibs (= %v-%r)
+BuildDependsOnly: True
+Source: http://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-%v.tar.gz
+Source-MD5: e53c05e1e7f1382c316afd6c763388b1
+ConfigureParams: <<
+ --disable-sdltest \
+ --enable-dependency-tracking
+<<
+CompileScript: <<
+  ./configure %c
+  make
+  fink-package-precedence .
+<<
+InstallScript: make install DESTDIR=%d
+SplitOff: <<
+  Package: %N-shlibs
+  Depends: <<
+    sdl2-shlibs (>= 2.0.1-1)
+  <<
+  Replaces: %N
+  Files: lib/libSDL2_ttf-*.dylib
+  Shlibs: %p/lib/libSDL2_ttf-2.0.0.dylib 15.0.0 %n (>= 2.0.1-1)
+  Docfiles: CHANGES.txt COPYING.txt README.txt
+<<
+Docfiles: CHANGES.txt COPYING.txt README.txt
+Description: SDL ttf library
+DescPackaging: <<
+ Use --disable-sdltest to allow building on headless systems.
+<<
+Homepage: https://www.libsdl.org/projects/SDL_ttf/
+License: OSI-Approved

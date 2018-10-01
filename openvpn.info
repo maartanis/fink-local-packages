@@ -1,0 +1,149 @@
+Info2: <<
+Package: openvpn%type_pkg[osx]
+Type: osx (. -tuntap)
+Version: 2.4.6
+Revision: 1
+Description: Virtual private network daemon
+License: GPL
+
+Source: http://swupdate.%{ni}.net/community/releases/%{ni}-%v.tar.gz
+Source-MD5: 971d57e29b78b4b902eb2f4aae2f05a7
+Source-Checksum: SHA1(7cfcf441d6480a367bb68edac289a207b3825ff8)
+
+Depends: <<
+  lzo2-shlibs,
+  (%type_raw[osx] = -tuntap) tuntap,
+  openssl110-shlibs,
+  lz4-shlibs
+<<
+BuildDepends: <<
+  fink-package-precedence,
+  autoconf2.6,
+  automake1.15 | automake1.14,
+  fink (>= 0.24.12),
+  lzo2,
+  openssl110-dev,
+  lz4
+<<
+Replaces: %{ni}, %{ni}-tuntap
+Conflicts: %{ni}, %{ni}-tuntap
+Suggests: gawk, man2html
+
+Distribution: <<
+  (%type_raw[osx] = -tuntap) 10.7,
+  (%type_raw[osx] = -tuntap) 10.8,
+  (%type_raw[osx] = -tuntap) 10.9,
+  (%type_raw[osx] = .) 10.10,
+  (%type_raw[osx] = .) 10.11,
+  (%type_raw[osx] = .) 10.12,
+  (%type_raw[osx] = .) 10.13
+<<
+
+PatchFile: %{ni}.patch
+PatchFile-MD5: 4624b06b55e12b146565370efe7240ae
+
+SetCFLAGS: -g -O2 -Werror=array-bounds -Werror=volatile-register-var -Werror=implicit-function-declaration -fPIE -fstack-protector -Wformat -Werror=format-security -MD
+SetCPPFLAGS: -Wdate-time -D_FORTIFY_SOURCE=2
+SetCXXFLAGS: -g -O2 -Werror=array-bounds -Werror=volatile-register-var -Werror=implicit-function-declaration -fPIE -fstack-protector -Wformat -Werror=format-security
+SetLDFLAGS: -fPIE -Wl,-pie -Wl,-read_only_stubs -Wl,-bind_at_load
+
+ConfigureParams: <<
+ --enable-dependency-tracking\
+ --enable-password-save\
+ --enable-x509-alt-username\
+ --mandir=%p/share/man\
+ --includedir=%p/include/%{ni}\
+ --with-plugindir=%p/lib/%{ni}
+<<
+
+CompileScript: <<
+# autoreconf
+# automake -af
+# ./configure %c
+# /usr/bin/make prefix=%i
+  %{default_script}
+  fink-package-precedence .
+<<
+
+InstallScript: <<
+#!/bin/sh -e -x
+  /usr/bin/make install DESTDIR=%d
+  install -d -m 755 %i/share/{%{ni}/tests,doc/%{ni}/sample}
+  cp -a sample/sample-* %i/share/doc/%{ni}/sample/
+  cp -a contrib %i/share/%{ni}/
+  cp -a tests/*.sh %i/share/%{ni}/tests/
+  /bin/cat >%i/share/doc/%{ni}/org.%{ni}.client.plist <<'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>org.%{ni}.client</string>
+	<key>Nice</key>
+	<integer>-1</integer>
+	<key>OnDemand</key>
+	<false/>
+	<key>Program</key>
+	<string>%p/sbin/%{ni}</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>%p/sbin/%{ni}</string>
+		<string>%{ni}.conf</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>WatchPaths</key>
+	<array>
+		<string>%p/etc/%{ni}</string>
+	</array>
+	<key>WorkingDirectory</key>
+	<string>%p/etc/%{ni}</string>
+</dict>
+</plist>
+EOF
+<<
+
+DocFiles: AUTHORS ChangeLog INSTALL PORTS TODO.IPv6 doc/README.plugins
+
+DescDetail: <<
+OpenVPN is an application to securely tunnel IP networks over a
+single UDP or TCP port. It can be used to access remote sites, make
+secure point-to-point connections, enhance wireless security, etc.
+.
+OpenVPN uses all of the encryption, authentication, and certification
+features provided by the OpenSSL library (any cipher, key size, or
+HMAC digest).
+.
+OpenVPN may use static, pre-shared keys or TLS-based dynamic key exchange. It
+also supports VPNs with dynamic endpoints (DHCP or dial-up clients), tunnels
+over NAT or connection-oriented stateful firewalls (such as Linux's iptables).
+.
+Caution:
+easy-rsa was moved to https://github.com/OpenVPN/easy-rsa and is no longer
+included in the %{ni} source tarball.
+<<
+
+DescUsage: <<
+  Before you start to use %{ni}, you need to get the tuntaposx package from
+  http://tuntaposx.sourceforge.net as it can not be simply build from source
+  without an active apple developer subscribtion (osx 10.10 wants signed kext).
+  Users till 10.9 can continue using the tuntap package included in fink.
+  .
+  Under "%p/share/doc/%{ni}/org.%{ni}.client.plist" you will find an example
+  launchd.plist file to start your %{ni} tunnel at startup.
+  .
+  After configuring your %{ni}.conf, place the example plist into
+  /Library/LaunchDaemons/ or ~/Library/LaunchDaemons/ .
+<<
+
+DescPort: Includes all applicable patches from debian
+
+DescPackaging: <<
+  Former maintainer: Andreas "gecko" Gockel
+  Former maintainer: <= 2.0.7 ASARI Takashi <asari@users.sourceforge.net>
+<<
+
+Homepage: http://openvpn.net/
+
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>
+<<

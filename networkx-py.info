@@ -1,0 +1,30 @@
+Info2: <<
+Package: networkx-py%type_pkg[python]
+Version: 1.11
+Revision: 1
+Source: https://files.pythonhosted.org/packages/sources/n/networkx/networkx-%v.tar.gz
+Source-MD5: 6ef584a879e9163013e9a762e1cf7cd1
+Maintainer: Kurt Schwehr <goatbar@users.sourceforge.net>
+Homepage: https://networkx.github.io/
+License: BSD
+Type: python (2.7 3.4 3.5 3.6 3.7)
+Depends: <<
+    decorator-py%type_pkg[python],
+	yaml-py%type_pkg[python],
+	pygraphviz-py%type_pkg[python],
+	matplotlib-py%type_pkg[python]
+<<
+Description: Creating and manipulating graphs and networks
+DescDetail: <<
+	NetworkX is a Python package for the creation, manipulation, and
+	study of the structure, dynamics, and functions of complex networks.
+<<
+DocFiles: LICENSE.txt
+CompileScript: <<
+	perl -pi -e 's/(docdirbase.*)version/$1"py%type_pkg[python]"/g' setup.py
+	%p/bin/python%type_raw[python] setup.py build
+<<
+InstallScript: <<
+	%p/bin/python%type_raw[python] setup.py install --root %d
+<<
+<<

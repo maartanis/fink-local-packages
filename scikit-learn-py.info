@@ -1,0 +1,56 @@
+Info2: <<
+
+Package: scikit-learn-py%type_pkg[python]
+Version: 0.19.2
+Revision: 1
+License: OSI-Approved
+Type: python (2.7 3.4 3.5 3.6 3.7)
+
+Depends: scipy-py%type_pkg[python]
+BuildDepends: setuptools-tng-py%type_pkg[python]
+
+Source: https://files.pythonhosted.org/packages/source/s/scikit-learn/scikit-learn-%v.tar.gz
+Source-MD5: f91feb99601785fb2e6661349b696240
+
+CompileScript: <<
+  SHELL=/bin/sh %p/bin/python%type_raw[python] setup.py build
+<<
+
+InstallScript: %p/bin/python%type_raw[python] setup.py install --root=%d
+
+DocFiles: <<
+  AUTHORS.rst
+  COPYING
+  PKG-INFO
+  README.rst
+<<
+
+InfoTest: <<
+  TestDepends: <<
+    hypothesis-py%type_pkg[python],
+    mock-py%type_pkg[python],
+    nose-py%type_pkg[python],
+    pandas-py%type_pkg[python],
+    pluggy-py%type_pkg[python],
+    py-py%type_pkg[python]
+  <<
+  TestScript: <<
+    %p/bin/pytest-%type_raw[python] --showlocals --durations=20 --pyargs \
+      --cov -v sklearn sklearn || exit 2
+  <<
+<<
+
+Description: Modules for machine learning and data mining
+DescDetail: <<
+scikit-learn is a Python module for machine learning built on top of SciPy
+<<
+
+DescPort: <<
+- Use SHELL=/bin/sh trick as learned from numpy.
+- Tests do not work.
+<<
+
+Homepage: http://scikit-learn.org
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>
+# Info2
+<<

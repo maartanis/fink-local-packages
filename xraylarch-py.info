@@ -1,0 +1,272 @@
+Info2: <<
+
+Package: xraylarch-py%type_pkg[python]
+Version: 0.9.40
+
+Revision: 2
+Homepage: https://xraypy.github.io/xraylarch/
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>
+Type: python (3.4 3.5 3.6 3.7)
+Depends: <<
+  %N-shlibs
+<<
+
+BuildDepends:  setuptools-tng-py%type_pkg[python]
+
+Source: https://github.com/xraypy/xraylarch/archive/%v.tar.gz
+Source-MD5: 7f1a939223d3058ed1438d952d6637f7
+SourceRename: xraylarch-%v.tar.gz
+SourceDirectory: xraylarch-%v
+
+CompileScript: <<
+#!/bin/sh -ev
+  python%type_raw[python] setup.py -v build
+
+# fix execution rights
+  chmod a+x bin/gse_dtcorrect
+  chmod a+x bin/gse_scanviewer
+  chmod a+x bin/xrfdisplay
+  chmod a+x bin/xrfdisplay_epics
+
+# create app bundles. Script mimics the python script 
+# site-packages/bin/larch_makeicons
+
+# create app directories
+# leave out XYFit. It has been renamed to XAS Viewer
+  for APP in '1D XRD Viewer' '2D XRD Viewer' 'GSE Mapviewer' 'GSE ScanViewer' Larch 'Larch GUI' 'XAS Viewer' 'XRF Display' ; do
+    mkdir -p "$APP-py%type_pkg[python].app"/Contents/MacOS
+    mkdir "$APP-py%type_pkg[python].app"/Contents/Resources
+# create and mv Info.plist
+    cat >Info.plist <<EOFInfo.plist
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+  <key>CFBundleGetInfoString</key> <string>$APP-py%type_pkg[python]</string>
+  <key>CFBundleName</key> <string>$APP-py%type_pkg[python]</string>
+  <key>CFBundleExecutable</key> <string>$APP</string>
+  <key>CFBundleIconFile</key> <string>$APP</string>
+  <key>CFBundlePackageType</key> <string>APPL</string>
+  </dict>
+</plist>
+EOFInfo.plist
+    mv Info.plist "$APP-py%type_pkg[python].app"/Contents/
+
+# create and mv bash script, i.e. the actual binary
+    cat >Script <<EOFScript
+#!/bin/bash
+## Run X-ray Larch script with Python that created this script
+
+export PYTHONEXECUTABLE=%p/bin/python%type_raw[python]
+%p/bin/python%type_raw[python] %p/lib/python%type_raw[python]/site-packages/bin/BINARY
+EOFScript
+    chmod a+x Script
+    mv Script "$APP-py%type_pkg[python].app"/Contents/MacOS/"$APP"
+
+  done
+
+# copy icon and replace name of binary
+  cp icons/larch.icns                    1D\ XRD\ Viewer-py%type_pkg[python].app/Contents/Resources/1D\ XRD\ Viewer.icns
+  sed -i.bak "s|BINARY|diFFit1D|g"       1D\ XRD\ Viewer-py%type_pkg[python].app/Contents/MacOS/1D\ XRD\ Viewer
+  cp icons/larch.icns                    2D\ XRD\ Viewer-py%type_pkg[python].app/Contents/Resources/2D\ XRD\ Viewer.icns
+  sed -i.bak "s|BINARY|diFFit2D|g"       2D\ XRD\ Viewer-py%type_pkg[python].app/Contents/MacOS/2D\ XRD\ Viewer
+  cp icons/gse_xrfmap.icns               GSE\ Mapviewer-py%type_pkg[python].app/Contents/Resources/GSE\ Mapviewer.icns
+  sed -i.bak "s|BINARY|gse_mapviewer|g"  GSE\ Mapviewer-py%type_pkg[python].app/Contents/MacOS/GSE\ Mapviewer
+  cp icons/epics_scan.icns               GSE\ ScanViewer-py%type_pkg[python].app/Contents/Resources/GSE\ ScanViewer.icns
+  sed -i.bak "s|BINARY|gse_scanviewer|g" GSE\ ScanViewer-py%type_pkg[python].app/Contents/MacOS/GSE\ ScanViewer
+  cp icons/larch.icns                    Larch-py%type_pkg[python].app/Contents/Resources/Larch.icns
+  sed -i.bak "s|BINARY|larch|g"          Larch-py%type_pkg[python].app/Contents/MacOS/Larch
+  cp icons/larch.icns                    Larch\ GUI-py%type_pkg[python].app/Contents/Resources/Larch\ GUI.icns
+  sed -i.bak "s|BINARY|larch_gui|g"      Larch\ GUI-py%type_pkg[python].app/Contents/MacOS/Larch\ GUI
+  cp icons/onecone.icns                  XAS\ Viewer-py%type_pkg[python].app/Contents/Resources/XAS\ Viewer.icns
+  sed -i.bak "s|BINARY|xas_viewer|g"     XAS\ Viewer-py%type_pkg[python].app/Contents/MacOS/XAS\ Viewer
+  cp icons/ptable.icns                   XRF\ Display-py%type_pkg[python].app/Contents/Resources/XRF\ Display.icns
+  sed -i.bak "s|BINARY|xrfdisplay|g"     XRF\ Display-py%type_pkg[python].app/Contents/MacOS/XRF\ Display
+
+# cleanup
+  for APP in '1D XRD Viewer' '2D XRD Viewer' 'GSE Mapviewer' 'GSE ScanViewer' Larch 'Larch GUI' 'XAS Viewer' 'XRF Display' ; do
+    rm "$APP-py%type_pkg[python].app"/Contents/MacOS/*.bak
+  done
+<<
+
+InstallScript: <<
+#!/bin/sh -ev
+
+#  python%type_raw[python] setup.py --help-commands
+#  python%type_raw[python] setup.py install --help
+
+# temorary fix of install problems
+  install -d %i/Applications
+  mv *.app   %i/Applications/
+
+  sed -i.bak "s|DEBUG = False|DEBUG = True|g" setup.py
+  sed -i.bak "s|pyexe = pjoin(bindir, 'python')|pyexe = '%p/bin/python%type_raw[python]'|g" setup.py
+  sed -i.bak "s|sys.prefix|'%i/'|g" setup.py
+  sed -i.bak "s|sys.exec_prefix|'%i/'|g" setup.py
+
+  %p/bin/python%type_raw[python] setup.py -v install --root=%d
+
+  mkdir -p %i/lib/python%type_raw[python]/site-packages/bin
+  for BINARY in diFFit1D diFFit2D \
+    feff6l feff8l feff8l_ff2x feff8l_genfmt feff8l_pathfinder \
+    feff8l_pot feff8l_rdinp feff8l_xsph \
+    gse_dtcorrect gse_mapviewer gse_scanviewer \
+    larch larch_client larch_gui larch_makeicons larch_server \
+    xas_viewer xrfdisplay xrfdisplay_epics ; do
+
+    mv %i/bin/$BINARY %i/lib/python%type_raw[python]/site-packages/bin/
+  done
+  rmdir %i/bin
+
+# fix funny installation
+  mv %d%i/share %i/share
+  mv %i/share/larch %i/share/larch-py%type_pkg[python]
+  rm -rf %i/src
+
+# fix install names of libs.
+  cd %i/share/larch-py%type_pkg[python]/dlls/darwin64/
+
+  for LIBRARY in libcldata libfeff6 libfeff8lpath libfeff8lpotph libgcc_s_x86_64.1 \
+                 libgcc_s.1 libgfortran.3 libquadmath.0 libxdifile ; do
+    install_name_tool -id %p/share/larch-py%type_pkg[python]/dlls/darwin64/$LIBRARY.dylib $LIBRARY.dylib
+  done
+
+  for LIBRARY in libcldata libfeff6 libfeff8lpath libfeff8lpotph ; do
+    install_name_tool -change /usr/local/gfortran/lib/libgfortran.3.dylib \
+                            %p/share/larch-py%type_pkg[python]/dlls/darwin64/libgfortran.3.dylib \
+                            $LIBRARY.dylib
+  done
+
+  for LIBRARY in libfeff8lpath libfeff8lpotph libgfortran.3 libquadmath.0 ; do
+    install_name_tool -change /usr/local/gfortran/lib/libgcc_s.1.dylib \
+                            %p/share/larch-py%type_pkg[python]/dlls/darwin64/libgcc_s.1.dylib \
+                            $LIBRARY.dylib
+  done
+
+  for LIBRARY in libfeff8lpath libfeff8lpotph libgfortran.3 ; do
+    install_name_tool -change /usr/local/gfortran/lib/libquadmath.0.dylib \
+                            %p/share/larch-py%type_pkg[python]/dlls/darwin64/libquadmath.0.dylib \
+                            $LIBRARY.dylib
+  done
+
+# fix install names in binaries
+
+  cd %i/lib/python%type_raw[python]/site-packages/bin
+  for BINARY in feff6l feff8l_ff2x feff8l_genfmt feff8l_pathfinder feff8l_pot feff8l_rdinp feff8l_xsph ; do
+    install_name_tool -change /usr/local/gfortran/lib/libgfortran.3.dylib \
+                              %p/share/larch-py%type_pkg[python]/dlls/darwin64/libgfortran.3.dylib $BINARY
+    install_name_tool -change /usr/local/gfortran/lib/libgcc_s.1.dylib \
+                              %p/share/larch-py%type_pkg[python]/dlls/darwin64/libgcc_s.1.dylib $BINARY
+    install_name_tool -change /usr/local/gfortran/lib/libquadmath.0.dylib \
+                              %p/share/larch-py%type_pkg[python]/dlls/darwin64/libquadmath.0.dylib $BINARY
+  done
+
+# fix python version
+
+  for BINARY in diFFit1D diFFit2D feff8l gse_dtcorrect gse_mapviewer gse_scanviewer larch larch_client larch_gui larch_makeicons larch_server xas_viewer xrfdisplay xrfdisplay_epics ; do
+    sed -i.bak "s|/usr/bin/env python|/usr/bin/env python%type_raw[python]|g" $BINARY
+    rm $BINARY.bak
+  done
+
+# fix version specific directory
+
+  cd %i/lib/python%type_raw[python]/site-packages/larch
+  sed -i.bak "s|pjoin(sys.exec_prefix, 'share', 'larch')|pjoin(sys.exec_prefix, 'share', 'larch-py%type_pkg[python]')|g" site_config.py
+  rm site_config.py.bak
+
+<<
+
+# Create the Appliation Bundle
+#AppBundles: <<
+#  '1D XRD Viewer'-py%type_pkg[python]
+#  '2D XRD Viewer'-py%type_pkg[python]
+#  'GSE Mapviewer'-py%type_pkg[python]
+#  'GSE ScanViewer'-py%type_pkg[python]
+#  Larch-py%type_pkg[python]
+#  'Larch GUI'-py%type_pkg[python]
+#  'XAS Viewer'-py%type_pkg[python]
+#  'XRF Display'-py%type_pkg[python]
+#<<
+
+# temorary fix of install problems
+PostInstScript: <<
+  if ! test -e /Applications/Fink; then
+    install -d -m 755 /Applications/Fink
+  fi
+  for APP in '1D XRD Viewer' '2D XRD Viewer' 'GSE Mapviewer' 'GSE ScanViewer' Larch 'Larch GUI' 'XAS Viewer' 'XRF Display' ; do
+    ln -s %p/Applications/"$APP-py%type_pkg[python].app" /Applications/Fink/
+  done
+<<
+
+PostRmScript: <<
+  for APP in '1D XRD Viewer' '2D XRD Viewer' 'GSE Mapviewer' 'GSE ScanViewer' Larch 'Larch GUI' 'XAS Viewer' 'XRF Display' ; do
+    rm -f /Applications/Fink/"$APP-py%type_pkg[python].app"
+  done
+<<
+
+SplitOff: <<
+  Package: xraylarch-py%type_pkg[python]-shlibs
+  Depends: <<
+    asteval-py%type_pkg[python],
+    h5py-py%type_pkg[python],
+    lmfit-py%type_pkg[python],
+    matplotlib-py%type_pkg[python],
+    peakutils-py%type_pkg[python],
+    pil-py%type_pkg[python],
+    psutil-py%type_pkg[python],
+    requests-py%type_pkg[python],
+    scikit-learn-py%type_pkg[python],
+    scipy-py%type_pkg[python],
+    sqlalchemy-py%type_pkg[python],
+    termcolor-py%type_pkg[python],
+    uncertainties-py%type_pkg[python],
+    wxmplot-py%type_pkg[python],
+    wxutils-py%type_pkg[python],
+    yaml-py%type_pkg[python]
+  <<
+#    nose-py%type_pkg[python],
+
+#    pycifrw-py%type_pkg[python],
+#    pyepics-py%type_pkg[python],
+#    pyfai-py%type_pkg[python],
+
+#    tomopy-py%type_pkg[python],
+
+  Files: <<
+    share/larch-py%type_pkg[python]/dlls/darwin64/*.dylib
+  << 
+  Shlibs: <<
+    %p/share/larch-py%type_pkg[python]/dlls/darwin64/libcldata.dylib         0.0.0 %n (>= 0.0.0-1)
+    %p/share/larch-py%type_pkg[python]/dlls/darwin64/libfeff6.dylib          0.0.0 %n (>= 0.0.0-1)
+    %p/share/larch-py%type_pkg[python]/dlls/darwin64/libfeff8lpath.dylib     0.0.0 %n (>= 0.0.0-1)
+    %p/share/larch-py%type_pkg[python]/dlls/darwin64/libfeff8lpotph.dylib    0.0.0 %n (>= 0.0.0-1)
+    %p/share/larch-py%type_pkg[python]/dlls/darwin64/libgcc_s_x86_64.1.dylib 1.0.0 %n (>= 1.0.0-1)
+    %p/share/larch-py%type_pkg[python]/dlls/darwin64/libgcc_s.1.dylib        1.0.0 %n (>= 1.0.0-1)
+    %p/share/larch-py%type_pkg[python]/dlls/darwin64/libgfortran.3.dylib     4.0.0 %n (>= 4.0.0-1)
+    %p/share/larch-py%type_pkg[python]/dlls/darwin64/libquadmath.0.dylib     1.0.0 %n (>= 1.0.0-1)
+    %p/share/larch-py%type_pkg[python]/dlls/darwin64/libxdifile.dylib        0.0.0 %n (>= 0.0.0-1)
+  <<
+<<
+
+DocFiles: <<
+  LICENSE
+  README.rst
+  dylibs/README
+  plugins/README.TXT
+  requirements.txt
+<<
+
+License: BSD
+Description: Synchrotron X-ray data analysis in python
+
+DescDetail: <<
+Larch is an open-source library and toolkit for processing and analyzing
+scientific data.  Initially designed for X-ray spectroscopic and scattering
+data collected at modern synchrotron sources, Larch provides a wide
+selection of algorithms for processing such X-ray data.  It also provides
+many tools for organizing complex data sets and general-purpose tools for
+processing and analyzing arrays of scientific data.
+<<
+
+# Info2
+<<

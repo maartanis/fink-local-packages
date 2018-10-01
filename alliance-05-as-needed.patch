@@ -1,0 +1,26 @@
+Description: fix FTBFS with ld --as-needed option
+ Libraries which use symbols from other libraries must be placed before them
+ in the argument list.
+Author: Ilya Barygin <randomaction@ubuntu.com>
+
+--- alliance-5.1.1.orig/asimut/src/Makefile.am
++++ alliance-5.1.1/asimut/src/Makefile.am
+@@ -21,7 +21,7 @@ libSch_la_LIBADD  = -lMut
+ 
+ bin_PROGRAMS      = asimut
+ 
+-asimut_LDADD      = -L. libSch.la -lBvl -lBhl \
++asimut_LDADD      = -L. -lBvl -lBhl \
+                     -L$(top_builddir)/mbk/src \
+                     -L$(top_builddir)/bvl/src \
+                     -L$(top_builddir)/bhl/src \
+@@ -30,7 +30,8 @@ asimut_LDADD      = -L. libSch.la -lBvl
+                     -L$(top_builddir)/log/src \
+                     -L$(top_builddir)/abl/src \
+                     -L$(top_builddir)/aut/src \
+-                    -lAut -lAbl -lMlu -lRcn -lBvl -lBhl -lBeh -lPat -lLog -lMut
++                    -lAut -lAbl -lMlu -lRcn -lBvl -lBhl -lBeh -lPat -lLog -lMut \
++                    libSch.la
+ 
+ asimut_SOURCES    = beh_delay.h	  c_fsyn_sr1k_56.c    vh_debug.c    vh_lspec.c	  vh_util.h  vh_init.h \
+                     beh_setdelay.c	  c_fsyn_sr4k_10.c    vh_debug.h    vh_lspec.h	  vh_xcomm.c \

@@ -1,0 +1,50 @@
+Info2: <<
+
+Package: pyopengl-py%type_pkg[python]
+Version: 3.1.0
+Revision: 1
+License: BSD
+Type: python (2.7 3.4 3.5 3.6 3.7)
+
+Depends: python%type_pkg[python]
+BuildDepends: setuptools-tng-py%type_pkg[python]
+
+Source: https://files.pythonhosted.org/packages/source/P/PyOpenGL/PyOpenGL-%v.tar.gz
+Source-MD5: 0de021941018d46d91e5a8c11c071693
+
+CompileScript: %p/bin/python%type_raw[python] setup.py build
+
+InstallScript: %p/bin/python%type_raw[python] setup.py install --root=%d
+
+DocFiles: <<
+  license.txt
+  PKG-INFO
+<<
+
+InfoTest: <<
+#  TestDepends: <<
+#    numpy-py%type_pkg[python],
+#    pip-py%type_pkg[python],
+#    wheel-py%type_pkg[python]
+#  <<
+  TestScript: <<
+# This does not seem to actually test anything, but does not harm either.
+    %p/bin/python%type_raw[python] setup.py test
+# This might be a way to test, but it does not work
+# maybe pygame-py is missing
+#     cd tests
+#     %p/bin/python%type_raw[python] tests.py || exit 2
+  <<
+<<
+
+Description: Python binding to OpenGL
+DescDetail: <<
+PyOpenGL is the most common cross platform Python binding to OpenGL and
+related APIs.  The binding is created using the standard ctypes library,
+and is provided under an extremely liberal BSD-style Open-Source license.
+<<
+
+Homepage: http://pyopengl.sourceforge.net
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>
+# Info2
+<<

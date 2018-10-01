@@ -1,0 +1,49 @@
+Package: protobuf8-shlibs
+Version: 2.5.0
+Revision: 2
+Description: Protocol Buffers from Google
+License: BSD
+
+Source: https://protobuf.googlecode.com/files/protobuf-%v.tar.bz2
+Source-md5: a72001a9067a4c2c4e0e836d0f92ece4
+
+DocFiles: *.txt
+ConfigureParams: --with-zip
+
+# Patch Phase: (fix Puma linking in configure on Yosemite)
+PatchScript: <<
+#!/bin/sh -ev
+  sed -i.bak 's|10\.\[012\]\*|10.[012][,.]*|g' configure
+  sed -i.bak 's|10\.\[012\]\*|10.[012][,.]*|g' */configure
+<<
+
+Shlibs: <<
+  %p/lib/libprotobuf-lite.8.dylib 9.0.0 %n (>= 2.5.0-1)
+  %p/lib/libprotobuf.8.dylib      9.0.0 %n (>= 2.5.0-1)
+  %p/lib/libprotoc.8.dylib        9.0.0 %n (>= 2.5.0-1)
+<<
+
+Splitoff2: <<
+  Package: protobuf8-dev
+  Depends: protobuf8-shlibs (>= %v-1)
+  BuildDependsOnly: true
+  Files: <<
+    include
+    lib/libprotobuf-lite.dylib
+    lib/libprotobuf.dylib
+    lib/libprotoc.dylib
+  <<
+<<
+
+DescDetail: <<
+  Protocol Buffers are a way of encoding structured data in an 
+  efficient yet extensible format. Google uses Protocol Buffers 
+  for almost all of its internal RPC protocols and file formats.
+
+  The package include the commandline tool protoc. Usage: 
+     protoc [OPTION] PROTO_FILES
+<<
+
+Homepage: http://code.google.com/p/protobuf/
+
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

@@ -1,0 +1,44 @@
+# -*- coding: ascii; tab-width: 4 -*-
+Info2: <<
+Package: pytools-py%type_pkg[python]
+Version: 2018.5.2
+Revision: 1
+Type: python (2.7 3.4 3.5 3.6 3.7)
+
+Description: Collection of tools for Python
+DescDetail: <<
+	Pytools is a big bag of things that are "missing" from the
+	Python standard library.
+<<
+Maintainer: Daniel Johnson <daniel@daniel-johnson.org>
+License: BSD
+Homepage: http://pypi.python.org/pypi/pytools
+
+Source: https://files.pythonhosted.org/packages/source/p/pytools/pytools-%v.tar.gz
+Source-MD5: 50217f663eb30a1e5d248cc6defd0cf6
+
+Depends: <<
+	appdirs-py%type_pkg[python],
+	decorator-py%type_pkg[python],
+	numpy-py%type_pkg[python] (>= 1.14.5-2),
+	python%type_pkg[python],
+	six-py%type_pkg[python]
+<<
+BuildDepends: fink (>= 0.24.12), setuptools-tng-py%type_pkg[python]
+
+CompileScript: %p/bin/python%type_raw[python] setup.py build
+
+InfoTest: <<
+	TestDepends: pytest-py%type_pkg[python]
+	TestScript: <<
+		PYTHONPATH=build/lib py.test-%type_raw[python] . || exit 2
+		/usr/bin/find build/lib -name '*.pyc' -delete
+	<<
+<<
+
+InstallScript: <<
+	%p/bin/python%type_raw[python] setup.py install --root=%d
+<<
+
+DocFiles: LICENSE PKG-INFO README.rst
+<<

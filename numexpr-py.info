@@ -1,0 +1,50 @@
+Info2: <<
+Package: numexpr-py%type_pkg[python]
+Version: 2.6.8
+Revision: 1
+Maintainer: Kurt Schwehr <goatbar@users.sourceforge.net>
+Type: python (2.7 3.4 3.5 3.6 3.7)
+Depends: <<
+	python%type_pkg[python],
+	numpy-py%type_pkg[python] (>= 1.14.5-2)
+<<
+BuildDepends: fink (>= 0.24.12)
+Source: https://files.pythonhosted.org/packages/source/n/numexpr/numexpr-%v.tar.gz
+Source-MD5: 8148ba96476e2c367292789bc2a90d85
+
+GCC: 4.0
+CompileScript: <<
+ SHELL=/bin/sh %p/bin/python%type_raw[python] setup.py build
+<<
+InstallScript: <<
+ #!/bin/bash -ev
+ %p/bin/python%type_raw[python] setup.py install --root %d
+
+# delete offending files *.pyc
+ if [ %type_pkg[python] -eq 27 ]; then
+  rm %i/lib/python%type_raw[python]/site-packages/numexpr/*.pyc
+ else
+  rm %i/lib/python%type_raw[python]/site-packages/numexpr/__pycache__/*.pyc
+ fi
+<<
+InfoTest: <<
+ TestScript: <<
+  #!/bin/bash -ev
+  export PYTHONPATH=$(ls -d %b/build/lib.macosx-*-%type_raw[python])
+  cd ..
+  %p/bin/python%type_raw[python] -B -c 'import sys, numexpr; r=numexpr.test(); sys.exit(2*len(r.errors)+len(r.failures))'
+  exit $?
+ <<
+ TestSuiteSize: small
+<<
+
+DocFiles: ANNOUNCE.rst AUTHORS.txt LICENSE.txt README.rst RELEASE_NOTES.rst
+Description: Fast array evaluation for NumPy
+DescDetail: <<
+Numexpr is a fast numerical expression evaluator for NumPy.  With it,
+expressions that operate on arrays (like "3*a+4*b") are accelerated
+and use less memory than doing the same calculation in Python.
+<<
+License: OSI-Approved
+Homepage: https://github.com/pydata/numexpr
+<<

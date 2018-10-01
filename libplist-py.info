@@ -1,0 +1,74 @@
+Info2: <<
+Package: libplist-py%type_pkg[python]
+Type: python (2.7 3.3 3.4)
+Version: 1.12
+Revision: 2
+Description: Python bindings for libplist
+License: GPL/LGPL
+
+# Dependencies:
+BuildDepends: <<
+  fink (>= 0.24.12),
+  pkgconfig (>= 0.9.0-1), 
+  libiconv-dev,
+  libxml2 (>= 2.6.32-1),
+  cython-py%type_pkg[python],
+  libplist3 (>= %v-1)
+<<
+Depends: python%type_pkg[python], libplist3-shlibs (>= %v-1)
+
+GCC: 4.0
+
+# Unpack Phase:
+Source: http://www.libimobiledevice.org/downloads/libplist-%v.tar.bz2
+Source-MD5: 8b04b0f09f2398022dcd4fba75012997
+
+# UseMaxBuildJobs: false
+
+# Patch Phase: (fix Puma linking in configure on Yosemite)
+PatchScript: <<
+#!/bin/sh -ev
+  sed -i.bak 's|10\.\[012\]\*|10.[012][,.]*|g' configure
+<<
+
+# Compile Phase:
+CompileScript: <<
+#!/bin/sh -ev
+  ./configure %c
+  make CFLAGS='-Wno-unused-function -Wno-unneeded-internal-declaration'
+<<
+
+# Install Phase:
+InstallScript: <<
+#!/bin/sh -ev
+  cd cython
+  make install DESTDIR=%d
+  install -d %i/include/plist/cython/
+  install -d %i/lib/python%type_raw[python]/site-packages/Cython
+  install plist.pxd %i/lib/python%type_raw[python]/site-packages/Cython
+  install plist.pyx %i/lib/python%type_raw[python]/site-packages/Cython
+<<
+
+DocFiles: AUTHORS COPYING* NEWS README
+
+SplitOff: <<
+  Package: %N-dev
+  BuildDependsOnly: true
+  Depends: %N
+  Files: lib/python%type_raw[python]/site-packages/Cython
+<<
+
+# Additional Info
+
+DescPort: <<
+The automatic detection of python does not work. It easily returns a mix of 
+system and fink paths of the python executable, the include and the lib folder.
+Cython is only available for python2.6 and 2.7
+
+This fixes not finding the SDK:
+-DCMAKE_OSX_SYSROOT:STRING=/ -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=""
+<<
+
+Homepage: http://www.libimobiledevice.org/
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>
+<<

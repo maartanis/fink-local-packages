@@ -1,0 +1,330 @@
+Description: Add missing linker search dir
+ This patch adds missing minker search directories
+Author: Roland Stigge <stigge@antcom.de>
+
+--- alliance-5.1.1.orig/aut/src/Makefile.am
++++ alliance-5.1.1/aut/src/Makefile.am
+@@ -9,4 +9,4 @@ autdebug.h    autexit.h     authash.h
+ autenv.c      autfree.c     authash2.c    autsort.c
+ 
+ libAut_la_LDFLAGS = -version-info @AUT_DLL_VERSION@
+-libAut_la_LIBADD  = -lMut
++libAut_la_LIBADD  = -L$(top_builddir)/mbk/src -lMut
+--- alliance-5.1.1.orig/rds/src/Makefile.am
++++ alliance-5.1.1/rds/src/Makefile.am
+@@ -24,4 +24,4 @@ libRds_la_SOURCES   = rdsalloc.c rdsfree
+                       gds_drive.h gds_parse.c gds_swap.h gds.h \
+                       gds_error.c gds_parse.h rgs.h gds_drive.c gds_error.h gds_swap.c
+ libRds_la_LDFLAGS   = -version-info @RDS_DLL_VERSION@
+-libRds_la_LIBADD    = -lMpu -lMut
++libRds_la_LIBADD    = -L$(top_builddir)/mbk/src -lMpu -lMut
+--- alliance-5.1.1.orig/elp/src/Makefile.am
++++ alliance-5.1.1/elp/src/Makefile.am
+@@ -5,7 +5,7 @@ include_HEADERS     = elp.h
+ libElp_la_SOURCES   = elp_y.y elp_l.l elp.c  elperror.c elp.h
+ 
+ libElp_la_LDFLAGS   = -version-info @ELP_DLL_VERSION@
+-libElp_la_LIBADD    = -lRcn -lMut
++libElp_la_LIBADD    = -L$(top_builddir)/mbk/src -lRcn -lMut
+ 
+ CLEANFILES          = elp_y.c elp_y.h elp_l.c
+ 
+--- alliance-5.1.1.orig/abl/src/Makefile.am
++++ alliance-5.1.1/abl/src/Makefile.am
+@@ -12,4 +12,4 @@ libAbl_la_SOURCES    = abldel.h       ab
+                        ablctlsimp.h   ablerror.h     ablmap.h       ablsubst.h \
+                        abldel.c       ablflat.c      abloptim.c     ablunflat.c
+ libAbl_la_LDFLAGS    = -version-info @ABL_DLL_VERSION@
+-libAbl_la_LIBADD     = -lAut -lMut
++libAbl_la_LIBADD     = -L$(top_builddir)/mbk/src -L$(top_builddir)/aut/src -lAut -lMut
+--- alliance-5.1.1.orig/bdd/src/Makefile.am
++++ alliance-5.1.1/bdd/src/Makefile.am
+@@ -25,4 +25,4 @@ libBdd_la_SOURCES   = bdd.h            b
+                       bddenv.c         bddimply.c       bddsimpdc.c
+ 
+ libBdd_la_LDFLAGS   = -version-info @BDD_DLL_VERSION@
+-libBdd_la_LIBADD    = -lAbl -lAut
++libBdd_la_LIBADD    = -L$(top_builddir)/abl/src -L$(top_builddir)/aut/src -lAbl -lAut
+--- alliance-5.1.1.orig/log/src/Makefile.am
++++ alliance-5.1.1/log/src/Makefile.am
+@@ -4,4 +4,4 @@ include_HEADERS     = log.h
+ libLog_la_SOURCES   = log_bdd0.c  log.h	log_thashbdd.c  log_thashloc.c \
+                       log_bdd1.c  log_prefbib.c  log_thash.c
+ libLog_la_LDFLAGS   = -version-info @LOG_DLL_VERSION@
+-libLog_la_LIBADD    = -lMut
++libLog_la_LIBADD    = -L$(top_builddir)/mbk/src -lMut
+--- alliance-5.1.1.orig/btr/src/Makefile.am
++++ alliance-5.1.1/btr/src/Makefile.am
+@@ -5,4 +5,4 @@ libBtr_la_SOURCES   = btr.h	  btrenv.c	b
+                       btralloc.c  btrenv.h	btrfree.c   btrfunc.h	 btrtrans.c   \
+                       btralloc.h  btrerror.c	btrfree.h   btrresize.c  btrtrans.h
+ libBtr_la_LDFLAGS   = -version-info @BTR_DLL_VERSION@
+-libBtr_la_LIBADD    = -lBdd
++libBtr_la_LIBADD    = -L$(top_builddir)/bdd/src -lBdd
+--- alliance-5.1.1.orig/vex/src/Makefile.am
++++ alliance-5.1.1/vex/src/Makefile.am
+@@ -9,4 +9,4 @@ libVex_la_SOURCES   = vexcreate.h  vexer
+                       vexalloc.h   vexenv.c	  vexextend.h  vexoptim.c  vexslice.h \
+                       vexcreate.c  vexenv.h	  vexfree.c    vexoptim.h  vexunflat.c
+ libVex_la_LDFLAGS   = -version-info @VEX_DLL_VERSION@
+-libVex_la_LIBADD    = -lAut -lMut
++libVex_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/aut/src -lAut -lMut
+--- alliance-5.1.1.orig/ctl/src/Makefile.am
++++ alliance-5.1.1/ctl/src/Makefile.am
+@@ -5,4 +5,4 @@ libCtl_la_SOURCES   = ctladd.c    ctlall
+                       ctladd.h    ctldel.c	ctlenv.h    ctlfree.c	ctlsearch.c  ctlview.h \
+                       ctlalloc.c  ctldel.h	ctlerror.c  ctlfree.h	ctlsearch.h
+ libCtl_la_LDFLAGS   = -version-info @CTL_DLL_VERSION@
+-libCtl_la_LIBADD    = -lVex -lAut -lMut
++libCtl_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/aut/src -L$(top_builddir)/vex/src -lVex -lAut -lMut
+--- alliance-5.1.1.orig/ctp/src/Makefile.am
++++ alliance-5.1.1/ctp/src/Makefile.am
+@@ -5,7 +5,7 @@ libCtp_la_SOURCES   = ctp_y.y ctp_l.l ct
+                       ctp_bedef.h  ctp_bspec.c  ctp_byacc.h  ctp_parse.c  ctp_util.h \
+                       ctp_blex.h   ctp_bspec.h  ctp_util.c   ctp_utype.h
+ libCtp_la_LDFLAGS   = -version-info @CTP_DLL_VERSION@
+-libCtp_la_LIBADD    = -lCtl -lVex -lAut -lMut
++libCtp_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/aut/src -L$(top_builddir)/vex/src -L$(top_builddir)/ctl/src -lCtl -lVex -lAut -lMut
+ 
+ CLEANFILES          = ctp_y.c ctp_y.h ctp_l.c
+ 
+@@ -19,6 +19,6 @@ ctp_l.c : $(srcdir)/ctp_l.l ctp_y.h
+ 
+ EXTRA_PROGRAMS  = ctptest
+ 
+-ctptest_LDADD   = -L. -lCtp -lCtl -lVex -lAut -lMut
++ctptest_LDADD   = -L. -L$(top_builddir)/mbk/src -L$(top_builddir)/aut/src -L$(top_builddir)/vex/src -L$(top_builddir)/ctl/src -lCtp -lCtl -lVex -lAut -lMut
+ 
+ ctptest_SOURCES = main.c
+--- alliance-5.1.1.orig/abe/src/Makefile.am
++++ alliance-5.1.1/abe/src/Makefile.am
+@@ -4,4 +4,4 @@ include_HEADERS     = abe.h
+ libAbe_la_SOURCES   = abe.h	   beh_del.c   beh_error.c  beh_getgenva.c  beh_rmv.c	   beh_view.c \
+                       beh_add.c  beh_dict.c  beh_fre.c    beh_message.c   beh_toolbug.c
+ libAbe_la_LDFLAGS   = -version-info @ABE_DLL_VERSION@
+-libAbe_la_LIBADD    = -lAbl -lAut -lMut
++libAbe_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/aut/src -L$(top_builddir)/abl/src -lAbl -lAut -lMut
+--- alliance-5.1.1.orig/abt/src/Makefile.am
++++ alliance-5.1.1/abt/src/Makefile.am
+@@ -9,4 +9,4 @@ libAbt_la_SOURCES   = abt.h	      bhl_de
+                       bhl_delaux.c  bhl_error.c   bhl_makbdd.c  bhl_orderbdd.c \
+                       bhl_delaux.h  bhl_error.h   bhl_makbdd.h  bhl_orderbdd.h
+ libAbt_la_LDFLAGS   = -version-info @ABT_DLL_VERSION@
+-libAbt_la_LIBADD    = -lBdd -lAbe -lAbl -lAut -lMut
++libAbt_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/aut/src -L$(top_builddir)/abl/src -L$(top_builddir)/abe/src -L$(top_builddir)/bdd/src -lBdd -lAbe -lAbl -lAut -lMut
+--- alliance-5.1.1.orig/abv/src/Makefile.am
++++ alliance-5.1.1/abv/src/Makefile.am
+@@ -9,7 +9,7 @@ libAbv_la_SOURCES   = bvl_bcomp_y.y bvl_
+                       abv.h	     bvl_bspec.c  bvl_drive.c  bvl_parse.h  bvl_util.h \
+                       bvl_bedef.h  bvl_bspec.h  bvl_drive.h  bvl_utdef.h  bvl_utype.h \
+                       bvl_blex.h   bvl_byacc.h  bvl_parse.c  bvl_util.c
+-libAbv_la_LIBADD    = -lAbe -lBdd -lMut
++libAbv_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/abe/src -L$(top_builddir)/bdd/src -lAbe -lBdd -lMut
+ 
+ CLEANFILES          = bvl_bcomp_y.c bvl_bcomp_y.h bvl_bcomp_l.c
+ 
+--- alliance-5.1.1.orig/fsm/src/Makefile.am
++++ alliance-5.1.1/fsm/src/Makefile.am
+@@ -6,4 +6,4 @@ libFsm_la_SOURCES   = fsm.h	    fsmalloc
+                       fsmadd.h    fsmbdd.h	fsmerror.h  fsmorder.h	 fsmsimp.h \
+                       fsmalloc.c  fsmdel.c	fsmfree.c   fsmsearch.c  fsmview.c
+ libFsm_la_LDFLAGS   = -version-info @FSM_DLL_VERSION@
+-libFsm_la_LIBADD    = -lBdd -lAbl -lAut -lMut
++libFsm_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/aut/src -L$(top_builddir)/abl/src -L$(top_builddir)/bdd/src -lBdd -lAbl -lAut -lMut
+--- alliance-5.1.1.orig/fks/src/Makefile.am
++++ alliance-5.1.1/fks/src/Makefile.am
+@@ -7,4 +7,4 @@ lib_LTLIBRARIES     = libFks.la
+ include_HEADERS     = fks.h
+ libFks_la_SOURCES   = fks.h  fksdrive.c  fksdrive.h  fkserror.c  fkserror.h  fksparse.c  fksparse.h
+ libFks_la_LDFLAGS   = -version-info @FKS_DLL_VERSION@
+-libFks_la_LIBADD    = -lFsm -lAbl -lBdd -lAut -lMut
++libFks_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/aut/src -L$(top_builddir)/fsm/src -L$(top_builddir)/abl/src -L$(top_builddir)/bdd/src -lFsm -lAbl -lBdd -lAut -lMut
+--- alliance-5.1.1.orig/fvh/src/Makefile.am
++++ alliance-5.1.1/fvh/src/Makefile.am
+@@ -14,7 +14,7 @@ libFvh_la_SOURCES   = fbl_bcomp_y.y fbl_
+                       fvhfbh2fsm.c fvhfbh2fsm.h fvh.h fvhparse.c fvhparse.h
+ 
+ libFvh_la_LDFLAGS   = -version-info @FVH_DLL_VERSION@
+-libFvh_la_LIBADD    = -lFsm -lAbl -lBdd -lAut -lMut
++libFvh_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/aut/src -L$(top_builddir)/bdd/src -L$(top_builddir)/abl/src -L$(top_builddir)/fsm/src -lFsm -lAbl -lBdd -lAut -lMut
+ 
+ CLEANFILES          = fbl_bcomp_y.c fbl_bcomp_y.h fbl_bcomp_l.c
+ 
+--- alliance-5.1.1.orig/ftl/src/Makefile.am
++++ alliance-5.1.1/ftl/src/Makefile.am
+@@ -7,7 +7,7 @@ lib_LTLIBRARIES     = libFtl.la
+ include_HEADERS     = ftl.h
+ libFtl_la_SOURCES   = ftl.h  ftlacces.c  ftlacces.h  ftlerror.c  ftlerror.h
+ libFtl_la_LDFLAGS   = -version-info @FTL_DLL_VERSION@
+-libFtl_la_LIBADD    = -lFks -lFvh -lFsm -lBdd -lAbl -lAut -lMut 
++libFtl_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/aut/src -L$(top_builddir)/abl/src -L$(top_builddir)/bdd/src -L$(top_builddir)/fvh/src -L$(top_builddir)/fks/src -L$(top_builddir)/fsm/src -lFks -lFvh -lFsm -lBdd -lAbl -lAut -lMut
+ 
+ EXTRA_PROGRAMS = fsmtest
+ 
+--- alliance-5.1.1.orig/rtn/src/Makefile.am
++++ alliance-5.1.1/rtn/src/Makefile.am
+@@ -5,4 +5,4 @@ libRtn_la_SOURCES   = rtnadd.h    rtndel
+                       rtn.h	  rtnalloc.c  rtndel.h	  rtnfree.c   rtnget.h	   rtnview.c \
+                       rtnadd.c  rtnalloc.h  rtnerror.c  rtnfree.h   rtnsearch.c  rtnview.h
+ libRtn_la_LDFLAGS   = -version-info @RTN_DLL_VERSION@
+-libRtn_la_LIBADD    = -lVex -lAut -lMut
++libRtn_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/vex/src -L$(top_builddir)/aut/src -lVex -lAut -lMut
+--- alliance-5.1.1.orig/rtd/src/Makefile.am
++++ alliance-5.1.1/rtd/src/Makefile.am
+@@ -7,4 +7,4 @@ include_HEADERS     = rtd.h
+ libRtd_la_SOURCES   = rtd.h     rtd_drive.h  rtd_error.h  rtd_get.h    rtd_parse.h \
+                       rtd_drive.c  rtd_error.c  rtd_get.c    rtd_parse.c
+ libRtd_la_LDFLAGS   = -version-info @RTD_DLL_VERSION@
+-libRtd_la_LIBADD    = -lRtn -lVex -lMut
++libRtd_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/vex/src -L$(top_builddir)/rtn/src -lRtn -lVex -lMut
+--- alliance-5.1.1.orig/scl/src/Makefile.am
++++ alliance-5.1.1/scl/src/Makefile.am
+@@ -11,4 +11,4 @@ libScl_la_SOURCES   = scgmain.h	schenv.c
+                       scglofig.h  schdel.c	schfree.h   scp.h      scpdel.c \
+                       scgmain.c   schdel.h	schget.c    scpadd.c   scpdel.h
+ libScl_la_LDFLAGS   = -version-info @SCL_DLL_VERSION@
+-libScl_la_LIBADD    = -lAbl -lAut -lMut
++libScl_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/abl/src -L$(top_builddir)/aut/src -lAbl -lAut -lMut
+--- alliance-5.1.1.orig/vpn/src/Makefile.am
++++ alliance-5.1.1/vpn/src/Makefile.am
+@@ -7,4 +7,4 @@ libVpn_la_SOURCES   = vpnalloc.c  vpnenv
+                       vpnadd.c  vpndel.h    vpnfree.c   vpnsearch.h  vpnview.c \
+                       vpnadd.h  vpnenv.c    vpnfree.h   vpnsimp.c    vpnview.h
+ libVpn_la_LDFLAGS   = -version-info @VPN_DLL_VERSION@
+-libVpn_la_LIBADD    = -lVex -lAut -lMut
++libVpn_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/vex/src -L$(top_builddir)/aut/src -lVex -lAut -lMut
+--- alliance-5.1.1.orig/vbh/src/Makefile.am
++++ alliance-5.1.1/vbh/src/Makefile.am
+@@ -13,7 +13,7 @@ libVbh_la_SOURCES   = vbh.h  vbh_add.c
+                       vtl.h  vtlacces.c	vtlacces.h  vtlerror.c	vtlerror.h \
+                       vpd.h          vpd_drive.h  vpd_error.h  vpd_parse.h \
+                       vpd_drive.c  vpd_error.c  vpd_parse.c
+-libVbh_la_LIBADD    = -lVpn -lVex -lAut -lMut
++libVbh_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/vex/src -L$(top_builddir)/aut/src -L$(top_builddir)/vpn/src -lVpn -lVex -lAut -lMut
+ 
+ CLEANFILES          = vbl_bcomp_y.c vbl_bcomp_y.h vbl_bcomp_l.c
+ 
+--- alliance-5.1.1.orig/pat/src/Makefile.am
++++ alliance-5.1.1/pat/src/Makefile.am
+@@ -13,7 +13,7 @@ libPat_la_SOURCES   = pat_addpacom.c pat
+                       pat_type.h ppt.h \
+                       pat_debug.c pat_debug.h pat_getusage.c phl.h
+ libPat_la_LDFLAGS   = -version-info @PAT_DLL_VERSION@
+-libPat_la_LIBADD    = -lAut -lMut
++libPat_la_LIBADD    = -L$(top_builddir)/aut/src -L$(top_builddir)/mbk/src -lAut -lMut
+ 
+ EXTRADIST   = pat_decl_y.c pat_decl_y.h pat_desc_y.h pat_desc_y.c \
+               pat_decl_l.c 
+--- alliance-5.1.1.orig/druc/src/Makefile.am
++++ alliance-5.1.1/druc/src/Makefile.am
+@@ -10,7 +10,7 @@ vmcrelat.h vmctools.c vmctools.h vmcunif
+ 
+ CFLAGS = $(ALLIANCE_CFLAGS) -g -O0
+ libVrd_la_LDFLAGS = -version-info @VRD_DLL_VERSION@
+-libVrd_la_LIBADD  = -lRds -lMut
++libVrd_la_LIBADD  = -L$(top_builddir)/mbk/src -L$(top_builddir)/rds/src  -lRds -lMut
+ 
+ CLEANFILES          = drucompi_l.c drucompi_y.h drucompi_y.c
+ 
+@@ -26,7 +26,7 @@ AM_CFLAGS = -I$(top_srcdir)/mbk/src -I$(
+ 
+ druc_LDADD = $(ALLIANCE_LIBS) -L. libVrd.la \
+ -L$(builddir)/../../rds/src/.libs -lRds \
+--L$(builddir)/../../mbk/src/.libs -lMpu -lMut
++-L$(builddir)/../../mbk/src/.libs -L$(top_builddir)/mbk/src -lMpu -lMut -lMph
+ 
+ druc_SOURCES = \
+ drucbath.c drucbath.h
+--- alliance-5.1.1.orig/beh/src/Makefile.am
++++ alliance-5.1.1/beh/src/Makefile.am
+@@ -25,4 +25,4 @@ libBeh_la_SOURCES   = beh_addbeaux.c	 be
+                       cst_DisjunctSet.c  cst_GetPrevElt.c  cst_SetCmp.c
+ 
+ libBeh_la_LDFLAGS   = -version-info @BEH_DLL_VERSION@
+-libBeh_la_LIBADD    = -lLog -lAbl -lAut -lMut
++libBeh_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/log/src -L$(top_builddir)/abl/src -L$(top_builddir)/aut/src -lLog -lAbl -lAut -lMut
+--- alliance-5.1.1.orig/bhl/src/Makefile.am
++++ alliance-5.1.1/bhl/src/Makefile.am
+@@ -7,4 +7,4 @@ libBhl_la_SOURCES   = beh_chkbefig.c	 be
+                       beh_debug.h	 beh_indexbdd.c  beh_maknode.c	 beh_unamlist.c \
+                       beh_depend.c	 beh_makquad.c	 bhl.h
+ libBhl_la_LDFLAGS   = -version-info @BHL_DLL_VERSION@
+-libBhl_la_LIBADD    = -lBeh -lAut -lMut
++libBhl_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/beh/src -L$(top_builddir)/aut/src -lBeh -lAut -lMut
+--- alliance-5.1.1.orig/bvl/src/Makefile.am
++++ alliance-5.1.1/bvl/src/Makefile.am
+@@ -5,7 +5,7 @@ libBvl_la_SOURCES   = bvl_bcomp_y.y bvl_
+                       bvl_bedef.h   bvl_drive.c    bvl.h         bvl_util.c \
+                       bvl_byacc.h   bvl_globals.c  bvl_parse.c
+ libBvl_la_LDFLAGS   = -version-info @BVL_DLL_VERSION@
+-libBvl_la_LIBADD    = -lBhl -lBeh -lMut
++libBvl_la_LIBADD    = -L$(top_builddir)/mbk/src -L$(top_builddir)/beh/src -L$(top_builddir)/bhl/src -lBhl -lBeh -lMut
+ 
+ CLEANFILES          = bvl_bcomp_y.c bvl_bcomp_y.h bvl_bcomp_l.c
+ 
+--- alliance-5.1.1.orig/asimut/src/Makefile.am
++++ alliance-5.1.1/asimut/src/Makefile.am
+@@ -17,11 +17,11 @@ libSch_la_SOURCES = sch_addshent.c	sch_C
+                     sch_bug.c	sch_Free.c    sch_GoNTim.c   sch_message.c
+ 
+ libSch_la_LDFLAGS = -version-info @SCH_DLL_VERSION@
+-libSch_la_LIBADD  = -lMut
++libSch_la_LIBADD  = -L$(top_builddir)/mbk/src -lMut
+ 
+ bin_PROGRAMS      = asimut
+ 
+-asimut_LDADD      = -L. -lBvl -lBhl \
++asimut_LDADD      = -L. \
+                     -L$(top_builddir)/mbk/src \
+                     -L$(top_builddir)/bvl/src \
+                     -L$(top_builddir)/bhl/src \
+@@ -30,7 +30,7 @@ asimut_LDADD      = -L. -lBvl -lBhl \
+                     -L$(top_builddir)/log/src \
+                     -L$(top_builddir)/abl/src \
+                     -L$(top_builddir)/aut/src \
+-                    -lAut -lAbl -lMlu -lRcn -lBvl -lBhl -lBeh -lPat -lLog -lMut \
++		    -lMut -lMlo -lAut -lAbl -lMlu -lRcn -lBvl -lBhl -lBeh -lPat -lLog \
+                     libSch.la
+ 
+ asimut_SOURCES    = beh_delay.h	  c_fsyn_sr1k_56.c    vh_debug.c    vh_lspec.c	  vh_util.h  vh_init.h \
+--- alliance-5.1.1.orig/genlib/src/Makefile.am
++++ alliance-5.1.1/genlib/src/Makefile.am
+@@ -26,7 +26,7 @@ libMgn_la_SOURCES   = genlib.c \
+                       dpgen_Shifter.c
+ 
+ libMgn_la_LDFLAGS = -version-info @MGN_DLL_VERSION@
+-libMgn_la_LIBADD  = -lMlu -lMlo -lMpu -lMph -lMut
++libMgn_la_LIBADD  = -L$(top_builddir)/mbk/src -lMlu -lMlo -lMpu -lMph -lMut
+ 
+ bin_SCRIPTS         = genlib
+ CLEANFILES          = genlib y.output dpgen_ROM_code.c dpgen_ROM_code.h
+--- alliance-5.1.1.orig/genpat/src/Makefile.am
++++ alliance-5.1.1/genpat/src/Makefile.am
+@@ -8,7 +8,7 @@ libPgn_la_SOURCES = AFFECT.c ARRAY.c CON
+                     libpat_l.c libpat_l.h
+ 
+ libPgn_la_LDFLAGS = -version-info @PGN_DLL_VERSION@
+-libPgn_la_LIBADD  = -lPat -lMut
++libPgn_la_LIBADD  = -L$(top_builddir)/mbk/src -L$(top_builddir)/pat/src -lPat -lMut
+ 
+ bin_SCRIPTS       = genpat
+ CLEANFILES        = genpat
+--- alliance-5.1.1.orig/lynx/src/Makefile.am
++++ alliance-5.1.1/lynx/src/Makefile.am
+@@ -9,7 +9,7 @@ AM_CFLAGS       = @ALLIANCE_CFLAGS@ \
+ cougar_LDADD    = @ALLIANCE_LIBS@ \
+                   -L$(top_builddir)/mbk/src/.libs \
+                   -L$(top_builddir)/rds/src/.libs \
+-                  -lRds -lMlu -lMpu -lMlo -lMph -lMut 
++                  -lRcn -lRds -lMlu -lMpu -lMlo -lMph -lMut 
+ 
+ flatrds_LDADD   = @ALLIANCE_LIBS@ \
+                   -L$(top_builddir)/mbk/src/.libs \
+--- alliance-5.1.1.orig/ocp/src/placer/Makefile.am
++++ alliance-5.1.1/ocp/src/placer/Makefile.am
+@@ -47,4 +47,4 @@ ocp_SOURCES = Ocp.cpp PBin.cpp PCon.cpp
+ 
+ EXTRA_DIST = iocgram.h
+ 
+-CLEANFILES = iocgram.c iocgram.h
++CLEANFILES = iocgram.c iocgram.h iocscan.c

@@ -1,0 +1,66 @@
+Package: alliance-doc
+Version: 5.1.1
+Revision: 1
+Description: CAD tools and libraries for VLSI design
+License: GPL
+
+# Unpack Phase:
+Source: ftp://asim.lip6.fr/pub/alliance/distribution/latest/alliance-%v.tar.bz2
+Source-MD5: 2a0e6419d8e61e432554e17fa3d6dc1c
+SourceDirectory: alliance/src
+
+# Dependencies:
+BuildDepends: <<
+  autoconf2.6,
+  automake1.15,
+  pkgconfig,
+  libtool2,
+  imagemagick,
+  texlive-nox-base,
+  ghostscript-nox
+<<
+
+# Patch Phase:
+PatchScript: <<
+#!/bin/sh -ev
+  sed -i.bak 's|begin{figure}\[H\]|begin{figure}[h!]|g' documentation/tutorials/start/start.tex
+  sed -i.bak 's|begin{figure}\[H\]|begin{figure}[h!]|g' documentation/tutorials/simulation/tex/simulation.tex
+  sed -i.bak 's|begin{figure}\[H\]|begin{figure}[h!]|g' documentation/tutorials/synthesis/tex/synthesis.tex 
+  sed -i.bak 's|begin{figure}\[H\]|begin{figure}[h!]|g' documentation/tutorials/place_and_route/tex/place_and_route.tex
+  sed -i.bak 's|{charter,setspace,fancybox}|{charter,setspace,fancybox,float}|g' documentation/tutorials/start/start.tex
+<<
+
+# Compile Phase:
+CompileScript: <<
+#!/bin/sh -ev
+  ./autostuff
+  ./configure %c
+# delete all directories except documentation
+  sed -i.bak 's|TOOLSDIRS .* documentation|TOOLSDIRS = documentation|g' Makefile
+  sed -i.bak 's|SUBDIRS .* documentation|SUBDIRS = documentation|g' Makefile
+  make
+<<
+
+# Install Phase:
+DocFiles: CHANGES COPYING-2.0 COPYING.LIB-2.0 FAQ LICENCE README README.macosx
+
+InstallScript: <<
+#!/bin/sh -ev
+  make install DESTDIR=%d
+# move the stuff from the top directory to %p/share/doc/alliance-doc/
+  mkdir -p %d/%p/share/doc/alliance-doc/
+  mv    %d/%p/tutorials  %d/%p/share/doc/alliance-doc/
+  mv    %d/%p/examples   %d/%p/share/doc/alliance-doc/
+  mv    %d/%p/doc/*      %d/%p/share/doc/alliance-doc/
+  rmdir %d/%p/doc
+<<
+
+# Additional Info
+DescDetail: <<
+Documentattion for alliance, CAD tools and libraries for VLSI design
+<<
+
+DescPort: separate doc package, because it depends on latex, which is large
+
+Homepage: https://www-soc.lip6.fr/en/team-cian/softwares/alliance
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

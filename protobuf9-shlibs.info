@@ -1,0 +1,50 @@
+Package: protobuf9-shlibs
+Version: 3.5.1
+Revision: 1
+Description: Protocol Buffers from Google
+License: BSD
+
+Source: https://github.com/google/protobuf/archive/v%v.tar.gz
+Source-md5: 710f1a75983092c9b45ecef207236104
+SourceDirectory: protobuf-%v
+
+ConfigureParams: --with-zip
+
+CompileScript: <<
+#!/bin/sh -ev
+  ./autogen.sh
+ 	%{default_script}
+<<
+
+DocFiles: BUILD LICENCSE README.md *.txt
+
+Shlibs: <<
+  %p/lib/libprotobuf-lite.9.dylib 9.0.0 %n (>= 3.5.0-1)
+  %p/lib/libprotobuf.9.dylib      9.0.0 %n (>= 3.5.0-1)
+  %p/lib/libprotoc.9.dylib        9.0.0 %n (>= 3.5.0-1)
+<<
+
+Splitoff2: <<
+  Package: protobuf9-dev
+  Depends: protobuf9-shlibs (>= %v-1)
+  BuildDependsOnly: true
+  Files: <<
+    include
+    lib/libprotobuf-lite.dylib
+    lib/libprotobuf.dylib
+    lib/libprotoc.dylib
+  <<
+<<
+
+DescDetail: <<
+  Protocol Buffers are a way of encoding structured data in an 
+  efficient yet extensible format. Google uses Protocol Buffers 
+  for almost all of its internal RPC protocols and file formats.
+
+  The package include the commandline tool protoc. Usage: 
+     protoc [OPTION] PROTO_FILES
+<<
+
+Homepage: http://code.google.com/p/protobuf/
+
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

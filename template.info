@@ -1,0 +1,79 @@
+Package: template
+Version: 1.0
+Revision: 1
+Description: My template
+BuildDepends: fink-package-precedence
+#Depends: 
+License: OSI-Approved
+
+# Unpack Phase:
+Source: http://www.template.org/template/%n-%v.tar.gz
+Source-MD5: 87ca3ec9d4e882f0d2250fed61b3326f
+
+#SourceDirectory: template
+#NoSourceDirectory: true
+
+#UseMaxBuildJobs: false
+
+# Patch Phase: (fix Puma linking in configure on Yosemite)
+#PatchFile: %n.patch
+#PatchFile-MD5: 6b742f9e7bc280a52377b828fd885aa6
+
+PatchScript: <<
+#!/bin/sh -ev
+#  sed -i.bak 's|10\.\[012\]\*|10.[012][,.]*|g' */configure
+  %{default_script}
+<<
+
+ConfigureParams: <<
+  --disable-nls
+<<
+
+#GCC: 4.0
+
+# Compile Phase
+CompileScript: <<
+#!/bin/sh -ev
+  %{default_script}
+  fink-package-precedence --no-headers .
+<<
+
+# Install Phase:
+InstallScript: <<
+#!/bin/sh -ev
+  %{default_script}
+  install -d        %i/Applications
+  mv 'Template.app' %i/Applications/
+<<
+
+PostInstScript: <<
+  if ! test -e /Applications/Fink; then
+    install -d -m 755 /Applications/Fink
+  fi
+  ln -s '%p/Applications/Template.app' /Applications/Fink/
+<<
+
+PostRmScript: <<
+  rm -f '/Applications/Fink/Template.app'
+<<
+
+#AppBundles: Template.app
+
+DocFiles: template
+
+InfoTest: <<
+  TestScript: make check || exit 2
+<<
+
+DescDetail: template
+
+DescUsage: <<
+  Template
+<<
+
+DescPort: <<
+  Template
+<<
+
+Homepage: http://www.template.org/template
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

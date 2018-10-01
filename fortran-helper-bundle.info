@@ -1,0 +1,30 @@
+Package: fortran-helper-bundle
+Version: 1
+Revision: 1
+Type: bundle
+License: Public Domain
+Description: Convenience bundle for real programmers
+Depends: <<
+  f77chk,
+  fcat,
+  floppy,
+  flow,
+  fortran-utils,
+  ftidy,
+  ftnchek,
+  to-f90
+<<
+
+DescDetail: <<
+This package installs a number of helper programs for fortran 
+programming, namely:
+  f77chk
+  fcat
+  floppy
+  flow
+  fortran-utils
+  ftidy
+  ftnchek
+  to-f90
+<<
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

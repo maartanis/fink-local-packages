@@ -1,0 +1,129 @@
+Package: alliance
+Version: 5.1.1
+Revision: 1
+Description: CAD tools and libraries for VLSI design
+License: GPL
+
+# Unpack Phase:
+Source: ftp://asim.lip6.fr/pub/alliance/distribution/latest/%n-%v.tar.bz2
+Source-MD5: 2a0e6419d8e61e432554e17fa3d6dc1c
+SourceDirectory: alliance/src
+
+PatchFile:     %n-01-autoreconf.patch
+PatchFile-MD5: 8a7a273747eaf4503144452affc2cadb
+PatchFile2:     %n-02-yacc-build-fix.patch
+PatchFile2-MD5: 1c9894405deb85dc36aa852a3b9f8335
+PatchFile3:     %n-03-fhs-adjustments.patch
+PatchFile3-MD5: 4090d1fb18138aab15e952a7ae12c4db
+PatchFile4:     %n-04-attila-conf-sourced.patch
+PatchFile4-MD5: 352b915847041f5cfe3e5f967cd5f47f
+PatchFile5:     %n-05-as-needed.patch
+PatchFile5-MD5: 6e7690dd851847ef3055842b3de07747
+PatchFile6:     %n-06-fix-ldadd-dir.patch
+PatchFile6-MD5: 79b350d6ed1145a746728b08ce7d1253
+PatchFile7:     %n-07-genlib-fix-dirs.patch
+PatchFile7-MD5: 7218e9c63c4f75f88ea95dfb31b570e9
+PatchFile8:     %n-08-fix-libdir.patch
+PatchFile8-MD5: ef794d0e1fad67bfdc816a4ed3789473
+PatchFile9:     %n-09-fix-bashism.patch
+PatchFile9-MD5: df6aad9baa2d1c201c85be00a7d97a10
+PatchFile10:     %n-10-fix-latex.patch
+PatchFile10-MD5: 20d6a0f428255644c0e16cf3ac2fdd21
+PatchFile11:     %n-11-fix-paths.patch
+PatchFile11-MD5: c21eb2f832e86aec4f6cc890e14a56d3
+PatchFile12:     %n-12-fix-flex-2.6.patch
+PatchFile12-MD5: 9c8186524ea460d969f54f8928120e2e
+
+# Dependencies:
+BuildDepends: <<
+  autoconf2.6,
+  automake1.15-core,
+  bison,
+  fink (>= 0.30.0),
+  fink-package-precedence,
+  pkgconfig,
+  libtool2,
+  x11-dev,
+  openmotif4
+<<
+Depends: openmotif4-shlibs
+
+# Patch Phase: (patchfiles from debian package, further hints taken from macports)
+PatchScript: <<
+#!/bin/sh -ev
+  patch -p1 <%{PatchFile}
+  patch -p1 <%{PatchFile2}
+  patch -p1 <%{PatchFile3}
+  patch -p1 <%{PatchFile4}
+  patch -p1 <%{PatchFile5}
+  patch -p1 <%{PatchFile6}
+  patch -p1 <%{PatchFile7}
+  patch -p1 <%{PatchFile8}
+  patch -p1 <%{PatchFile9}
+  patch -p1 <%{PatchFile10}
+  patch -p1 <%{PatchFile11}
+  patch -p1 <%{PatchFile12}
+
+  sed -i.bak 's|malloc.h|malloc/malloc.h|g' xgra/src/XSB_parse.c
+  sed -i.bak 's|$(sysconfdir)/profile.d|%p/etc/profile.d|g' distrib/etc/Makefile.am
+# fix of strange linker bug, see https://trac.macports.org/ticket/32947
+  sed -i.bak 's|CXXFLAGS         = -g -O2|CXXFLAGS         = -g|g' nero/src/Makefile.am
+<<
+
+ConfigureParams: --mandir=%p/share/man --disable-static
+
+SetCFLAGS: -Wno-return-type
+
+# Compile Phase:
+CompileScript: <<
+#!/bin/sh -ev
+  ./autostuff
+  ./configure %c
+# take out documentation, it needs latex, which is big.
+  sed -i.bak 's| documentation||g' Makefile
+# fixing building
+  make -j1
+  fink-package-precedence .
+<<
+
+# Install Phase:
+DocFiles: CHANGES COPYING-2.0 COPYING.LIB-2.0 FAQ LICENCE README README.macosx
+
+InstallScript: <<
+#!/bin/sh -ev
+  make install DESTDIR=%d
+# move offending stuff from the top directory to %p/share/doc/alliance-doc/
+  mkdir -p %d/%p/share/doc/alliance/
+  mv %d/%p/doc    %d/%p/share/doc/alliance/
+  mv %d/%p/cells  %d/%p/share/doc/alliance/
+<<
+
+Splitoff: <<
+  Package: %N-dev
+  BuildDependsOnly: true
+  Files: <<
+    include
+    lib
+  <<
+  DocFiles: CHANGES COPYING-2.0 COPYING.LIB-2.0 FAQ LICENCE README README.macosx
+<<
+
+# Additional Info
+DescDetail: <<
+  Alliance is a complete set of free CAD tools and portable libraries for
+  VLSI design.  It includes a VHDL compiler and simulator, logic synthesis
+  tools, and automatic place and route tools.  A complete set of portable
+  CMOS libraries is provided.
+<<
+
+DescPort: <<
+1) documentation is in a separate package description
+2) To be fixed upstream:
+2.1) The large number of error for -Wno-return-type
+2.2) The linker bug in nero, which goes away with not having -O2
+     (is fixed in git)
+2.3) The linker bug, when building parallel
+<<
+
+Homepage: https://www-soc.lip6.fr/en/team-cian/softwares/alliance
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

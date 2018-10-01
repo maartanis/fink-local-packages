@@ -1,0 +1,46 @@
+Info2: <<
+Package: pdl-pm%type_pkg[perl]
+Version: 2.019
+Revision: 1
+Type: perl (5.16.2 5.18.2)
+Source: mirror:cpan:modules/by-module/PDL/PDL-%v.tar.gz
+Source-MD5: fa6f4915cff135fdeae8200aee2f34e9
+BuildDepends: <<
+  gd2,
+  gsl,
+  hdf5.10,
+  libproj9
+<<
+Depends: <<
+  gd2-shlibs,
+  gsl-shlibs,
+  hdf5.10-shlibs,
+  pgplot,
+  libproj9-shlibs,
+  inline-pm%type_pkg[perl],
+  inline-c-pm%type_pkg[perl],
+  perl%type_pkg[perl]-core
+<<
+PatchScript: <<
+  # disable inappropriate silliness for packaging environment
+  # Module::Install::AutoInstall specifically says *not* to put
+  # this in Makefile.PL!
+  perl -pi -e 's|(auto_install)|#\1|'g Makefile.PL
+  perl -pi -e 's|libgd.so|libgd.dylib|'g IO/GD/Makefile.PL
+<<
+CompileScript: <<
+#!/bin/bash -ev
+  export PREFIX=%p
+  %{default_script}
+<<
+InstallScript: <<
+  %{default_script}
+  mv %i/share/man %i/lib/perl5/%type_raw[perl]
+<<
+DocFiles: COPYING Changes README TODO
+UpdatePOD: true
+Description: Perl Data Language
+License: Artistic/GPL
+Homepage: https://metacpan.org/pod/PDL
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>
+<<

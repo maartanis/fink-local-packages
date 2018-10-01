@@ -1,0 +1,85 @@
+Package: portmidi
+Version: 217
+Revision: 1
+Description: Real-time MIDI input/output
+License: GPL
+
+BuildDepends: cmake
+
+# Unpack Phase
+Source: mirror:sourceforge:/portmedia/%n/%v/%n-src-%v.zip
+Source-MD5: 03f46fd3947e2ef4c8c465baaf832241
+SourceDirectory: portmidi
+
+UseMaxBuildJobs: false
+
+# Compile Phase
+Compilescript: <<
+#!/bin/sh -ev
+  mkdir build
+  cd build
+  Version=`sw_vers -productVersion | cut -d . -f1-2`
+  LDFLAGS="-L/Developer/SDKs/MacOSX"$Version".sdk/usr/lib/"
+  cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%p" -DCMAKE_OSX_ARCHITECTURES="%m" -DCMAKE_EXE_LINKER_FLAGS=$LDFLAGS
+  make
+<<
+
+# Install Phase
+Installscript: <<
+#!/bin/sh -ev
+# Development headers
+  install -d %i/include
+  install pm_common/portmidi.h %i/include
+  install porttime/porttime.h  %i/include
+# libs and dylibs
+  cd build
+  install -d %i/lib
+  install_name_tool -id %p/lib/libpmjni.dylib    libpmjni.dylib
+  install_name_tool -id %p/lib/libportmidi.dylib libportmidi.dylib
+  install libpmjni.dylib    %i/lib
+  install libportmidi_s.a   %i/lib
+  install libportmidi.dylib %i/lib
+# command line binaries
+  install -d %i/bin
+  install latency    %i/bin
+  install midiclock  %i/bin
+  install midithread %i/bin
+  install midithru   %i/bin
+  install mm         %i/bin
+  install qtest      %i/bin
+  install sysex      %i/bin
+  install test       %i/bin
+<<
+
+# Documentation
+DocFiles: CHANGELOG.txt license.txt README.txt
+
+SplitOff: <<
+  Package: %n-shlibs
+  Files: <<
+    lib/libpmjni.dylib
+    lib/libportmidi.dylib
+  <<
+  Shlibs: <<
+    %p/lib/libpmjni.dylib    0.0.0 %n (>= 217-1)
+    %p/lib/libportmidi.dylib 0.0.0 %n (>= 217-1)
+  <<
+  DocFiles: CHANGELOG.txt license.txt README.txt
+<<
+
+Splitoff2: <<
+  Package: %n-bin
+  Depends: portmidi-shlibs (>= %v-1)
+  Files: bin
+  DocFiles: CHANGELOG.txt license.txt README.txt
+<<
+
+# Additional Info
+DescDetail: <<
+<<
+
+DescPort: <<
+<<
+
+Homepage: http://portmedia.sourceforge.net/
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

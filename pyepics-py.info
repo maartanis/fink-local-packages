@@ -1,0 +1,68 @@
+Info2: <<
+
+Package: pyepics-py%type_pkg[python]
+Version: 3.3.1
+Revision: 1
+License: OSI-Approved
+Type: python (2.7 3.4 3.5 3.6 3.7)
+
+Depends: <<
+  epics-base3-shlibs,
+  numpy-py%type_pkg[python] (>= 1.14.5-2)
+<<
+
+BuildDepends: <<
+  setuptools-tng-py%type_pkg[python],
+  epics-base3-dev
+<<
+
+Source: https://files.pythonhosted.org/packages/source/p/pyepics/pyepics-%v.tar.gz
+Source-MD5: 57c21a163c6b9612f2ae92a0ddf603e7
+
+CompileScript: <<
+  #!/bin/sh -ev
+  NOLIBCA=1 %p/bin/python%type_raw[python] setup.py build 
+<<
+
+InstallScript: <<
+  #!/bin/sh -ev
+  NOLIBCA=1 %p/bin/python%type_raw[python] setup.py install --root=%d
+<<
+
+DocFiles: LICENSE PKG-INFO README.md
+
+InfoTest: <<
+  TestScript: <<
+    #!/bin/sh -ev
+#    %p/bin/python%type_raw[python] setup.py test || exit 2
+    cd tests/Setup
+    PYTHONPATH=../../build %p/bin/python%type_raw[python] simulator.py || exit 2
+  <<
+<<
+
+Description: Epics Channel Access for Python
+
+DescDetail: <<
+PyEpics is an interface for the Channel Access (CA) library of the Epics
+Control System to the Python Programming language.  The pyepics package
+provides a base epics module to python, with methods for reading from and
+writing to Epics Process Variables (PVs) via the CA protocol.  The package
+includes a fairly complete, thin layer over the low-level Channel Access
+library in the ca module, and higher-level abstractions built on top of
+this basic functionality.
+<<
+
+DescPort: <<
+The plain build contains the precompiled libraries libca.dylib and 
+libcom.dylib. However, both give serious warnings about being built with 
+flat namespaces. The remedy is to rebuild them within the epics-base3 
+packages and switch on their use here with "NOLIBCA=1"
+
+"python setup.py test" does not run any test. No other way found to run 
+tests so far.
+<<
+
+Homepage: http://cars9.uchicago.edu/software/python/pyepics3
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>
+# Info2
+<<

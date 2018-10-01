@@ -1,0 +1,66 @@
+Package: projectxc
+Version: 1.0.1
+Revision: 1
+Description: Xcode project from Lazarus
+Depends: fpc (>=3.0.2)
+License: LGPL
+
+# Unpack Phase:
+Source: https://macpgmr.github.io/ObjP/projectxc-src.zip
+Source-MD5: 9cf5ac815dd59e2494c623121a496906
+
+SourceDirectory: .
+
+# Patch Phase
+PatchScript: <<
+#!/bin/sh -ev
+# set the path for the templates
+  sed -i.bak "s|ExpandFileName(ExtractFilePath(ParamStr(0)))|'%p/share/projectxc/'|g" makeproj.pas
+# fix path /usr/local
+  sed -i.bak "s|/usr/local|'%p'|g" ProjectXC.html
+# Does not owrk. Xcode seems to do some 
+#  sed -i.bak "s|/usr/local|'%p'|g" templates/osx-laz/osx-laz.xcodeproj/project.pbxproj
+#  sed -i.bak "s|/usr/local|'%p'|g" templates/osx-simple/osx-simple.xcodeproj/project.pbxproj
+#  sed -i.bak "s|/usr/local|'%p'|g" templates/osx-simple-new/osx-simple-new.xcodeproj/project.pbxproj
+<<
+
+# Compile Phase (NOTE: there is no configure):
+CompileScript: <<
+#!/bin/sh -ev
+
+# compile programs
+fpc makeproj.pas
+<<
+
+# Install Phase:
+InstallScript: <<
+#!/bin/sh -ev
+
+# Install programs
+  mkdir %i/bin
+  install -m 755 makeproj %i/bin/makeproj
+# install templates
+  mkdir -p %i/share/projectxc
+  cp -R templates %i/share/projectxc
+#  find %i/share/projectxc/templates -name '*.bak' -delete
+<<
+
+DocFiles: ProjectXC.html changelog.txt
+
+DescDetail: <<
+blabla
+<<
+
+DescUsage: <<
+  Please read the documentation in 
+  file://%p/share/doc/%n/ProjectXC.html
+<<
+
+DescPort: <<
+  Note: This package installs fpc units 
+  and needs to be updated with a new version of fpc.
+  Native platform only. To do: cross-platform
+<<
+
+Homepage: https://macpgmr.github.io/ObjP/ProjectXC.html
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>

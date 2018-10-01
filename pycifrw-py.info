@@ -1,0 +1,63 @@
+Info2: <<
+
+Package: pycifrw-py%type_pkg[python]
+Version: 4.4
+Revision: 1
+License: OSI-Approved
+Type: python (2.7 3.4 3.5 3.6 3.7)
+
+Depends: python%type_pkg[python]
+BuildDepends: setuptools-tng-py%type_pkg[python]
+
+Source: https://files.pythonhosted.org/packages/source/P/PyCifRW/PyCifRW-%v.tar.gz
+Source-MD5: 33b14211e6b01a3218bda51461d2760f
+Source2: http://michael-ep3.physik.uni-halle.de/fink-sources/PyCifRW-tests-4.4.zip
+Source2-MD5: bea9cd1061fede478f79455de17efab3
+
+CompileScript: <<
+#!/bin/bash -ev
+  SHELL=/bin/sh %p/bin/python%type_raw[python] setup.py build
+<<
+
+InstallScript: %p/bin/python%type_raw[python] setup.py install --root=%d
+
+DocFiles: <<
+  LICENSE
+  PKG-INFO
+  README.md
+  docs
+<<
+
+InfoTest: <<
+  TestDepends: <<
+    numpy-py%type_pkg[python],
+    ply-py%type_pkg[python]
+  <<
+#  Test files are not part of the tar ball, but only in git.
+# Still missing files, reported upstream.
+# ddl_rearranged.dic
+# multi-image-test.cif.pulled_back
+# cif_nested.dic
+  TestScript: <<
+    mv ../PyCifRW-tests-4.4/* .
+    cp dictionaries/* tests/
+#    %p/bin/python%type_raw[python] setup.py test || exit 2
+    %p/bin/python%type_raw[python] TestPyCifRW.py || exit 2
+  <<
+<<
+
+Description: CIF/STAR file support for Python
+DescDetail: <<
+PyCIFRW provides support for reading and writing CIF (Crystallographic
+Information Format) files using Python.  It was developed at the Australian
+National Beamline Facility (ANBF), run by the Australian Synchrotron
+Research Program (ASRP), as part of a larger project to provide CIF
+input/output capabilities for data collection.  It is now (Feb 2018)
+maintained and developed within the Australian Nuclear Science and
+Technology Organisation (ANSTO).
+<<
+
+Homepage: https://bitbucket.org/jamesrhester/pycifrw
+Maintainer: Karl-Michael Schindler <karl-michael.schindler@web.de>
+# Info2
+<<

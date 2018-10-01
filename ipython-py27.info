@@ -1,0 +1,140 @@
+Info2: <<
+Package: ipython-py27
+Version: 5.8.0
+Revision: 1
+Maintainer: Kurt Schwehr <goatbar@users.sourceforge.net>
+
+Depends: <<
+  python27, 
+  jsonschema-py27,
+  jinja2-py27,
+  markupsafe-py27,
+  mistune-py27,
+  pexpect-py27,
+  pygments-py27,
+  pyqt4-mac-py27,
+  terminado-py27,
+  tornado-py27,
+  zmq-py27 (>= 15.0.0-1)
+<<
+
+Recommends: matplotlib-py27, zopeinterface-py27, pandoc
+# FIX: how do we enable one or the other of the pyqt4's?
+
+BuildDepends: <<
+  python27,
+  setuptools-tng-py27,
+  libzmq6
+<<
+# TODO(schwehr): sphinx
+# Sphinx only needs a single instance to build the docs
+# readline already correct in fink pythons
+
+Source: https://files.pythonhosted.org/packages/source/i/ipython/ipython-%v.tar.gz
+Source-MD5: 7014b8824981eef2cb893ea5398d6b8d
+
+CompileScript: python2.7 setup.py build
+InstallScript: <<
+ #!/bin/bash -ev
+ python2.7 setup.py install --root=%d
+
+ # mv %i/share/doc/ipython{,-py2.7}
+
+ for file in %i/bin/*; do
+   echo mv $file ${file}-py27
+   mv $file ${file}-py27
+ done
+
+ for file in  %i/share/man/man1/*; do
+   echo mv $file ${file%%.1.gz}-py27.1.gz
+   mv $file ${file%%.1.gz}-py27.1.gz
+ done
+
+<<
+#DocFiles: README.txt PKG-INFO
+Description: Replacement Python interpreter (Jupyter)
+DescDetail: <<
+ IPython is a replacement for the interactive Python interpreter with many
+ extra features for object introspection, system shell access and with its 
+ own special command system  for adding functionality when working 
+ interactively. It serves  as an embeddable, ready to use interpreter for 
+ your own programs and it offers a flexible framework which can be used as
+ the base environment for other system with Python as the underlying
+ language. Specifically scientific environments like Mathematica, IDL and
+ Matlab inspired its design, but similar ideas can be useful in many fields.
+<<
+PostInstScript: <<
+
+   # Remove the old if they exist
+   update-alternatives --auto ipython
+   update-alternatives --auto pycolor
+   update-alternatives --auto irunner
+   update-alternatives --remove ipython %p/bin/ipython2.7
+   update-alternatives --remove pycolor %p/bin/pycolor2.7
+   update-alternatives --remove irunner %p/bin/irunner2.7
+
+   # Now the new setup
+   update-alternatives --verbose --install %p/bin/ipython ipython %p/bin/ipython-py27 27 \
+	--slave %p/bin/ipcluster ipcluster %p/bin/ipcluster-py27 \
+	--slave %p/bin/ipcontroller ipcontroller %p/bin/ipcontroller-py27 \
+	--slave %p/bin/ipengine ipengine %p/bin/ipengine-py27 \
+	--slave %p/bin/iplogger iplogger %p/bin/iplogger-py27 \
+	--slave %p/bin/iptest iptest %p/bin/iptest-py27 \
+	--slave %p/bin/irunner irunner %p/bin/irunner-py27 \
+	--slave %p/bin/pycolor pycolor %p/bin/pycolor-py27 \
+	--slave %p/share/man/man1/ipython.1.gz ipython_man %p/share/man/man1/ipython-py27.1.gz \
+	--slave %p/share/man/man1/ipcluster.1.gz ipcluster_man %p/share/man/man1/ipcluster-py27.1.gz \
+	--slave %p/share/man/man1/ipcontroller.1.gz ipcontroller_man %p/share/man/man1/ipcontroller-py27.1.gz \
+	--slave %p/share/man/man1/ipengine.1.gz ipengine_man %p/share/man/man1/ipengine-py27.1.gz \
+	--slave %p/share/man/man1/iplogger.1.gz iplogger_man %p/share/man/man1/iplogger-py27.1.gz \
+	--slave %p/share/man/man1/irunner.1.gz irunner_man %p/share/man/man1/irunner-py27.1.gz \
+	--slave %p/share/man/man1/pycolor.1.gz pycolor_man %p/share/man/man1/pycolor-py27.1.gz
+
+  echo "You can inspect the links by running:"
+  echo "  update-alternatives --list ipython"
+  echo "  update-alternatives --display ipython"
+
+<<
+
+PreRmScript: <<
+
+   # Remove the old
+   update-alternatives --remove ipython %p/bin/ipython2.7
+   update-alternatives --remove pycolor %p/bin/pycolor2.7
+   update-alternatives --remove irunner %p/bin/irunner2.7
+
+  if [ $1 != "upgrade" ]; then
+     echo "update-alternatives --verbose --remove ipython %p/bin/ipython-py27"
+     update-alternatives --verbose --remove ipython %p/bin/ipython-py27
+  else
+    echo "Do not remove during upgrade"
+  fi
+<<
+
+# TODO: add twisted, foolscap, pyobjc
+# Passes for 2.5, but fails with 2.6.
+#InfoTest: <<
+#  TestDepends: nose-py27, zopeinterface-py27
+#  TestScript: <<
+#    PYTHONPATH=`pwd` %p/bin/python2.7 scripts/iptest || exit 2
+#  <<
+#<<
+
+DescPackaging: <<
+
+Has annoying warnings about deprecated python modules:
+https://bugs.launchpad.net/ipython/+bug/284660
+
+Still need to figure out how to handle ipcluster, ipcontroller,
+ipengine, ipython-wx and ipythonx
+
+Previous maintainer: Andrea Riciputi <ariciputi@users.sourceforge.net>
+
+<<
+
+
+License: BSD
+Homepage: http://ipython.org/
+
+# Info2
+<<
