@@ -12,9 +12,7 @@ BuildDepends: setuptools-tng-py%type_pkg[python]
 Source: https://files.pythonhosted.org/packages/source/s/scikit-learn/scikit-learn-%v.tar.gz
 Source-MD5: f91feb99601785fb2e6661349b696240
 
-CompileScript: <<
-  SHELL=/bin/sh %p/bin/python%type_raw[python] setup.py build
-<<
+CompileScript: %p/bin/python%type_raw[python] setup.py build
 
 InstallScript: %p/bin/python%type_raw[python] setup.py install --root=%d
 
@@ -46,8 +44,7 @@ scikit-learn is a Python module for machine learning built on top of SciPy
 <<
 
 DescPort: <<
-- Use SHELL=/bin/sh trick as learned from numpy.
-- Tests do not work.
+- Tests do only work, when the package is already installed.
 <<
 
 Homepage: http://scikit-learn.org

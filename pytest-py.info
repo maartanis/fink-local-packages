@@ -25,10 +25,14 @@ Source-Checksum: SHA256(3459a123ad5532852d36f6f4501dfe1acf4af1dd9541834a164666aa
 
 Depends: <<
 	argparse-py%type_pkg[python],
+	atomicwrites-py%type_pkg[python],
 	attrs-py%type_pkg[python] (>= 17.4.0-1),
 	(%type_pkg[python] << 30) funcsigs-py%type_pkg[python],
 	more-itertools-py%type_pkg[python] (>= 4.1.0-1),
+	pathlib2-py%type_pkg[python],
+	pluggy-py%type_pkg[python] (>= 0.6.0-1),
 	py-py%type_pkg[python] (>= 1.5.3-1),
+	scandir-py%type_pkg[python],
 	python%type_pkg[python]
 <<
 BuildDepends: fink (>= 0.24.12), setuptools-tng-py%type_pkg[python], setuptools-scm-py%type_pkg[python]
@@ -37,12 +41,8 @@ CompileScript: %p/bin/python%type_raw[python] setup.py build
 
 InfoTest: <<
 	TestDepends: <<
-		atomicwrites-py%type_pkg[python],
 		coverage-py%type_pkg[python],
 		hypothesis-py%type_pkg[python] (>= 3.34.0),
-		pathlib2-py%type_pkg[python],
-		pluggy-py%type_pkg[python] (>= 0.6.0-1),
-		scandir-py%type_pkg[python],
 		yaml-py%type_pkg[python]
     <<
 	TestScript: <<
