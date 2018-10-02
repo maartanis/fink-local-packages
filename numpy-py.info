@@ -1,7 +1,7 @@
 # -*- coding: ascii; tab-width: 4; x-counterpart: numpy-py.patch -*-
 Info4: <<
 Package: numpy-py%type_pkg[python]
-Version: 1.15.1
+Version: 1.15.2
 Revision: 1
 Maintainer: None <fink-devel@lists.sourceforge.net>
 Type: python (2.7 3.4 3.5 3.6 3.7)
@@ -14,7 +14,7 @@ BuildDepends: <<
 <<
 BuildConflicts: atlas
 Source: https://files.pythonhosted.org/packages/source/n/numpy/numpy-%v.zip
-Source-Checksum: SHA256(7b9e37f194f8bcdca8e9e6af92e2cbad79e360542effc2dd6b98d63955d8d8a3)
+Source-Checksum: SHA256(27a0d018f608a3fe34ac5e2b876f4c23c47e38295c47dd0775cc294cd2614bc1)
 #SourceRename: numpy-%v.zip
 PatchFile: numpy-py.patch
 PatchFile-MD5: 33b77792a1e113cb54f4a0172a6a076b
