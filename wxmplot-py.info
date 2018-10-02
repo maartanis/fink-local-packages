@@ -28,16 +28,10 @@ DocFiles: <<
 <<
 
 InfoTest: <<
-  TestScript: <<
-    #!/bin/sh -ev
-    if [ %type_pkg[python] -le 34 ]; then
-      python%type_raw[python] setup.py test || exit 2
-    fi
-  <<
+  TestScript: python%type_raw[python] setup.py test || exit 2
 <<
 
 Description: Plotting widgets for wxPython with matplotlib
-
 DescDetail: <<
 The wxmplot python package provides easy-to-use, richly featured plotting
 widgets for wxPython built on top of the wonderful matplotlib library.
