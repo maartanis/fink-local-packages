@@ -44,7 +44,7 @@ scikit-learn is a Python module for machine learning built on top of SciPy
 <<
 
 DescPort: <<
-- Tests do only work, when already installed.
+- Tests do only work, when the package is already installed.
 <<
 
 Homepage: http://scikit-learn.org
